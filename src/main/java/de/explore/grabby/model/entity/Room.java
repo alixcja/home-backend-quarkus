@@ -1,4 +1,4 @@
 package de.explore.grabby.model.entity;
 
-public class Room extends Entity{
+public class Room extends Entity {
 }
