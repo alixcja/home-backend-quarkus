@@ -1,13 +1,26 @@
 package de.explore.grabby.model.entity;
 
+
+import java.util.Date;
+
 //@Entity
 public abstract class Entity {
     private int entityID;
     private String name;
+    private String description;
     private String type;
     private Boolean isArchived;
+    private Date addedOn;
 
     public Entity() {
+    }
+
+    public Entity(String name, String description, String type) {
+        this.name = name;
+        this.description = description;
+        this.type = type;
+        this.isArchived = false;
+        this.addedOn = new Date();
     }
 
     public int getEntityID() {
@@ -26,6 +39,14 @@ public abstract class Entity {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getType() {
         return type;
     }
@@ -40,5 +61,9 @@ public abstract class Entity {
 
     public void setArchived(Boolean archived) {
         isArchived = archived;
+    }
+
+    public Date getAddedOn() {
+        return addedOn;
     }
 }

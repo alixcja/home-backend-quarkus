@@ -3,6 +3,7 @@ package de.explore.grabby.model.booking;
 import de.explore.grabby.model.entity.Entity;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 //@Entity
 public class Booking {
@@ -12,9 +13,18 @@ public class Booking {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Boolean wasCancelled;
-    private Boolean wasReturned;
+    private Optional<Boolean> wasReturned;
 
     public Booking() {
+    }
+
+    public Booking(String userId, Entity bookedEntity, LocalDateTime startDate, LocalDateTime endDate) {
+        this.userId = userId;
+        this.bookedEntity = bookedEntity;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.wasCancelled = false;
+        this.wasReturned = Optional.of(false);
     }
 
     public int getBookingId() {
@@ -65,11 +75,11 @@ public class Booking {
         this.wasCancelled = wasCancelled;
     }
 
-    public Boolean getWasReturned() {
+    public Optional<Boolean> getWasReturned() {
         return wasReturned;
     }
 
     public void setWasReturned(Boolean wasReturned) {
-        this.wasReturned = wasReturned;
+        this.wasReturned = Optional.ofNullable(wasReturned);
     }
 }

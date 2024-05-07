@@ -11,6 +11,11 @@ public class Favorite {
     public Favorite() {
     }
 
+    public Favorite(String userId, Entity favorite) {
+        this.userId = userId;
+        this.favorite = favorite;
+    }
+
     public int getFavoriteId() {
         return favoriteId;
     }
