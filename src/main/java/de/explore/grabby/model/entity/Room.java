@@ -1,4 +1,7 @@
 package de.explore.grabby.model.entity;
 
-public class Room extends Entity {
+import jakarta.persistence.Entity;
+
+@Entity
+public class Room extends BookingEntity {
 }

@@ -1,17 +1,17 @@
 package de.explore.grabby.model;
 
-import de.explore.grabby.model.entity.Entity;
+import de.explore.grabby.model.entity.BookingEntity;
 
 //@Entity
 public class Favorite {
     private int favoriteId;
     private String userId;
-    private Entity favorite;
+    private BookingEntity favorite;
 
     public Favorite() {
     }
 
-    public Favorite(String userId, Entity favorite) {
+    public Favorite(String userId, BookingEntity favorite) {
         this.userId = userId;
         this.favorite = favorite;
     }
@@ -32,11 +32,11 @@ public class Favorite {
         this.userId = userId;
     }
 
-    public Entity getFavorite() {
+    public BookingEntity getFavorite() {
         return favorite;
     }
 
-    public void setFavorite(Entity favorite) {
+    public void setFavorite(BookingEntity favorite) {
         this.favorite = favorite;
     }
 }

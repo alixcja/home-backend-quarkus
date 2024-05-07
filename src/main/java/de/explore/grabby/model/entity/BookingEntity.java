@@ -1,21 +1,28 @@
 package de.explore.grabby.model.entity;
 
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+
 import java.util.Date;
 
-//@Entity
-public abstract class Entity {
-    private int entityID;
+public abstract class BookingEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ENTITY_SEQ")
+    @SequenceGenerator(name = "ENTITY_SEQ", sequenceName = "BOOKING_ENTITY_TABLE_SEQ", allocationSize = 1)
+    private int id;
     private String name;
     private String description;
     private String type;
     private Boolean isArchived;
     private Date addedOn;
 
-    public Entity() {
+    public BookingEntity() {
     }
 
-    public Entity(String name, String description, String type) {
+    public BookingEntity(String name, String description, String type) {
         this.name = name;
         this.description = description;
         this.type = type;
@@ -23,12 +30,12 @@ public abstract class Entity {
         this.addedOn = new Date();
     }
 
-    public int getEntityID() {
-        return entityID;
+    public int getId() {
+        return id;
     }
 
-    public void setEntityID(int entityID) {
-        this.entityID = entityID;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -65,5 +72,9 @@ public abstract class Entity {
 
     public Date getAddedOn() {
         return addedOn;
+    }
+
+    public void setAddedOn(Date addedOn) {
+        this.addedOn = addedOn;
     }
 }

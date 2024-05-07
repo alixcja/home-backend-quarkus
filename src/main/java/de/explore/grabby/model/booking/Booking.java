@@ -1,30 +1,36 @@
 package de.explore.grabby.model.booking;
 
-import de.explore.grabby.model.entity.Entity;
+import de.explore.grabby.model.entity.BookingEntity;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-//@Entity
+@Entity
 public class Booking {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOOKING_SEQ")
+    @SequenceGenerator(name = "BOOKING_SEQ", sequenceName = "BOOKING_TABLE_SEQ", allocationSize = 1)
     private int bookingId;
     private String userId;
-    private Entity bookedEntity;
+    private BookingEntity bookedBookingEntity;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private Boolean wasCancelled;
-    private Optional<Boolean> wasReturned;
+    private LocalDateTime bookingDate;
+    private Boolean isCancelled;
+    private Optional<Boolean> isReturned;
 
     public Booking() {
     }
 
-    public Booking(String userId, Entity bookedEntity, LocalDateTime startDate, LocalDateTime endDate) {
+    public Booking(String userId, BookingEntity bookedBookingEntity, LocalDateTime startDate, LocalDateTime endDate) {
         this.userId = userId;
-        this.bookedEntity = bookedEntity;
+        this.bookedBookingEntity = bookedBookingEntity;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.wasCancelled = false;
-        this.wasReturned = Optional.of(false);
+        this.isCancelled = false;
+        this.isReturned = Optional.of(false);
     }
 
     public int getBookingId() {
@@ -43,12 +49,12 @@ public class Booking {
         this.userId = userId;
     }
 
-    public Entity getBookedEntity() {
-        return bookedEntity;
+    public BookingEntity getBookedBookingEntity() {
+        return bookedBookingEntity;
     }
 
-    public void setBookedEntity(Entity bookedEntity) {
-        this.bookedEntity = bookedEntity;
+    public void setBookedBookingEntity(BookingEntity bookedBookingEntity) {
+        this.bookedBookingEntity = bookedBookingEntity;
     }
 
     public LocalDateTime getStartDate() {
@@ -67,19 +73,27 @@ public class Booking {
         this.endDate = endDate;
     }
 
-    public Boolean getWasCancelled() {
-        return wasCancelled;
+    public LocalDateTime getBookingDate() {
+        return bookingDate;
     }
 
-    public void setWasCancelled(Boolean wasCancelled) {
-        this.wasCancelled = wasCancelled;
+    public void setBookingDate(LocalDateTime bookingDate) {
+        this.bookingDate = bookingDate;
     }
 
-    public Optional<Boolean> getWasReturned() {
-        return wasReturned;
+    public Boolean getIsCancelled() {
+        return isCancelled;
     }
 
-    public void setWasReturned(Boolean wasReturned) {
-        this.wasReturned = Optional.ofNullable(wasReturned);
+    public void setIsCancelled(Boolean isCancelled) {
+        this.isCancelled = isCancelled;
+    }
+
+    public Optional<Boolean> getIsReturned() {
+        return isReturned;
+    }
+
+    public void setIsReturned(Optional<Boolean> isReturned) {
+        this.isReturned = isReturned;
     }
 }

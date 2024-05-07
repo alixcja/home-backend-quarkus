@@ -1,6 +1,9 @@
 package de.explore.grabby.model.entity;
 
-public class Game extends Entity {
+import jakarta.persistence.Entity;
+
+@Entity
+public class Game extends BookingEntity {
     private Console consoleType;
 
     public Game(Console consoleType) {
