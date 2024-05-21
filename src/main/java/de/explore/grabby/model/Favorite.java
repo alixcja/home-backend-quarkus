@@ -1,11 +1,20 @@
 package de.explore.grabby.model;
 
 import de.explore.grabby.model.entity.BookingEntity;
+import jakarta.persistence.*;
 
-//@Entity
+@Entity
 public class Favorite {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FAVORITE_SEQ")
+    @SequenceGenerator(name = "FAVORITE_SEQ", sequenceName = "FAVORITE_TABLE_SEQ", allocationSize = 1)
+    @Column(name = "id")
     private int favoriteId;
+    @Column(name = "user_id")
     private String userId;
+    @JoinColumn(name = "bookingEntity_id")
+    @ManyToOne
     private BookingEntity favorite;
 
     public Favorite() {

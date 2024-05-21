@@ -3,23 +3,28 @@ package de.explore.grabby.model.booking;
 import de.explore.grabby.model.entity.BookingEntity;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
-public class Booking {
+public class Booking implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOOKING_SEQ")
     @SequenceGenerator(name = "BOOKING_SEQ", sequenceName = "BOOKING_TABLE_SEQ", allocationSize = 1)
+    @Column(name = "id")
     private int bookingId;
+    @Column(name = "user_id")
     private String userId;
+    @JoinColumn(name = "bookingEntity_id")
+    @ManyToOne
     private BookingEntity bookedBookingEntity;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private LocalDateTime bookingDate;
     private Boolean isCancelled;
-    private Optional<Boolean> isReturned;
+    private Boolean isReturned;
 
     public Booking() {
     }
@@ -30,7 +35,7 @@ public class Booking {
         this.startDate = startDate;
         this.endDate = endDate;
         this.isCancelled = false;
-        this.isReturned = Optional.of(false);
+        this.isReturned = false;
     }
 
     public int getBookingId() {
@@ -89,11 +94,11 @@ public class Booking {
         this.isCancelled = isCancelled;
     }
 
-    public Optional<Boolean> getIsReturned() {
+    public Boolean getIsReturned() {
         return isReturned;
     }
 
-    public void setIsReturned(Optional<Boolean> isReturned) {
+    public void setIsReturned(Boolean isReturned) {
         this.isReturned = isReturned;
     }
 }

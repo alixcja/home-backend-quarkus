@@ -1,12 +1,14 @@
 package de.explore.grabby.model.booking;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDateTime;
 
 //@Entity
 public class OverdueBooking {
     private int overdueBookingId;
+    @ManyToOne
     private Booking overdueBooking;
     private LocalDateTime sendLastReminder;
 

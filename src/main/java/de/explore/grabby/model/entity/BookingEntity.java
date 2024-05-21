@@ -1,22 +1,32 @@
 package de.explore.grabby.model.entity;
 
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public abstract class BookingEntity {
+@Entity
+public abstract class BookingEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ENTITY_SEQ")
     @SequenceGenerator(name = "ENTITY_SEQ", sequenceName = "BOOKING_ENTITY_TABLE_SEQ", allocationSize = 1)
+    @Column(name = "id")
     private int id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "type")
     private String type;
+
+    @Column(name = "isArchived")
     private Boolean isArchived;
+
+    @Column(name = "addedOn")
     private Date addedOn;
 
     public BookingEntity() {
