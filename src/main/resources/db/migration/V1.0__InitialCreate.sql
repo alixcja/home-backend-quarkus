@@ -3,9 +3,9 @@ create sequence BOOKING_TABLE_SEQ start WITH 1 increment 1;
 create sequence FAVORITE_TABLE_SEQ start WITH 1 increment 1;
 
     create table Booking (
-        id int8 not null,
-        user_id int8 not null,
-        bookingEntity_id int8 not null,
+        id integer not null,
+        user_id varchar(255) not null,
+        bookingEntity_id integer not null,
         startDate timestamp not null,
         endDate timestamp not null,
         bookingDate timestamp not null,
@@ -15,7 +15,7 @@ create sequence FAVORITE_TABLE_SEQ start WITH 1 increment 1;
     );
 
     create table BookingEntity (
-            id int8 not null,
+            id integer not null,
             name varchar(35) not null,
             description varchar(100),
             type varchar(31) not null,
@@ -26,9 +26,9 @@ create sequence FAVORITE_TABLE_SEQ start WITH 1 increment 1;
     );
 
     create table Favorite (
-       id int8 not null,
-        bookingEntity_id int8,
-        user_id int8,
+       id integer not null,
+        bookingEntity_id integer,
+        user_id varchar(255),
         primary key (id)
     );
 
