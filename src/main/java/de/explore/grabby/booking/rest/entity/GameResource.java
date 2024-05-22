@@ -1,7 +1,7 @@
-package de.explore.grabby.resource.entity;
+package de.explore.grabby.booking.rest.entity;
 
-import de.explore.grabby.model.entity.Game;
-import de.explore.grabby.repository.entity.GameRepository;
+import de.explore.grabby.booking.model.entity.Game;
+import de.explore.grabby.booking.repository.entity.GameRepository;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;

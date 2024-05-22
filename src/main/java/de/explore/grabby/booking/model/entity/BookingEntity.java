@@ -1,4 +1,4 @@
-package de.explore.grabby.model.entity;
+package de.explore.grabby.booking.model.entity;
 
 
 import jakarta.persistence.*;

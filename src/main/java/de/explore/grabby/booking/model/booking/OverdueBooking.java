@@ -1,6 +1,5 @@
-package de.explore.grabby.model.booking;
+package de.explore.grabby.booking.model.booking;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDateTime;

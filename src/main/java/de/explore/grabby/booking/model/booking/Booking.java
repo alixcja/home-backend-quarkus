@@ -1,11 +1,10 @@
-package de.explore.grabby.model.booking;
+package de.explore.grabby.booking.model.booking;
 
-import de.explore.grabby.model.entity.BookingEntity;
+import de.explore.grabby.booking.model.entity.BookingEntity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Entity
 public class Booking implements Serializable {

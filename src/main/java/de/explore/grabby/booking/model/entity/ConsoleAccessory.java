@@ -1,18 +1,17 @@
-package de.explore.grabby.model.entity;
+package de.explore.grabby.booking.model.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 
 public class ConsoleAccessory extends BookingEntity {
 
     @Column(name = "consoleType")
-    private Console consoleType;
+    private String consoleType;
 
-    public Console getConsoleType() {
+    public String getConsoleType() {
         return consoleType;
     }
 
-    public void setConsoleType(Console consoleType) {
+    public void setConsoleType(String consoleType) {
         this.consoleType = consoleType;
     }
 }

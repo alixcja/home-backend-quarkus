@@ -1,4 +1,4 @@
-package de.explore.grabby.resource;
+package de.explore.grabby.booking.rest;
 
 import jakarta.ws.rs.Path;
 

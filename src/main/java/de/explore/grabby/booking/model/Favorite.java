@@ -1,6 +1,6 @@
-package de.explore.grabby.model;
+package de.explore.grabby.booking.model;
 
-import de.explore.grabby.model.entity.BookingEntity;
+import de.explore.grabby.booking.model.entity.BookingEntity;
 import jakarta.persistence.*;
 
 @Entity
