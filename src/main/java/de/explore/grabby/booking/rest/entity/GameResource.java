@@ -26,7 +26,7 @@ public class GameResource {
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Game getGameByID(@PathParam("id") Long id) {
+    public Game getGameById(@PathParam("id") Long id) {
         return gameRepository.findById(id);
     }
 
@@ -35,5 +35,19 @@ public class GameResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<Game> getAllGames() {
         return gameRepository.listAll();
+    }
+
+    @Path("/{id}")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public void updateGameById(@PathParam("id") long id, Game game) {
+        gameRepository.updateGame(id, game);
+    }
+
+    @Path("/archive/{id}")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public void archiveGame(@PathParam("id") long id) {
+        gameRepository.archiveGame(id);
     }
 }
