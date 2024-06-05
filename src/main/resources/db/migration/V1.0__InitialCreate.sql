@@ -16,12 +16,12 @@ create sequence FAVORITE_TABLE_SEQ start WITH 1 increment 1;
 
     create table BookingEntity (
             id integer not null,
-            name varchar(35) not null,
-            description varchar(100),
-            type varchar(31) not null,
+            name varchar(100) not null,
+            description varchar,
+            type varchar(10) not null,
             isArchived boolean not null,
             addedOn timestamp not null,
-            consoleType varchar(25),
+            consoleType varchar(50),
             primary key (id)
     );
 
