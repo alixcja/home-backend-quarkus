@@ -20,7 +20,7 @@ create sequence FAVORITE_TABLE_SEQ start WITH 1 increment 1;
             description varchar,
             type varchar(10) not null,
             isArchived boolean not null,
-            addedOn timestamp not null,
+            addedOn date not null,
             consoleType varchar(50),
             primary key (id)
     );
