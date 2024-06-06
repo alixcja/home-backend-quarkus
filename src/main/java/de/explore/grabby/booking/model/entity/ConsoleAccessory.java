@@ -5,15 +5,20 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("consoleAccessory")
+@DiscriminatorValue("accessory")
 public class ConsoleAccessory extends BookingEntity {
-
-    public ConsoleAccessory() {
-        super();
-    }
 
     @Column(name = "consoleType")
     private String consoleType;
+
+    public ConsoleAccessory() {
+        // default
+    }
+
+    public ConsoleAccessory(String name, String description, String consoleType) {
+        super(name, description, "game");
+        this.consoleType = consoleType;
+    }
 
     public String getConsoleType() {
         return consoleType;

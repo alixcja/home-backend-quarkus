@@ -19,7 +19,7 @@ public class GameRepository implements PanacheRepository<Game> {
     public void archiveGame(long id) {
         Game gameToArchive = findById(id);
         if (gameToArchive != null) {
-            gameToArchive.setArchived(!gameToArchive.getArchived());
+            gameToArchive.setIsArchived(!gameToArchive.getIsArchived());
             persist(gameToArchive);
         }
     }

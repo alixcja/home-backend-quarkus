@@ -18,7 +18,7 @@ public class ConsoleRepository implements PanacheRepository<Console> {
     public void archiveConsole(long id) {
         Console consoleToArchive = findById(id);
         if (consoleToArchive != null) {
-            consoleToArchive.setArchived(!consoleToArchive.getArchived());
+            consoleToArchive.setIsArchived(!consoleToArchive.getIsArchived());
             persist(consoleToArchive);
         }
     }

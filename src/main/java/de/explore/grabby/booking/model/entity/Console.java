@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue("console")
 public class Console extends BookingEntity {
+
     public Console() {
         super();
     }

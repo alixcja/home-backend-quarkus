@@ -18,7 +18,7 @@ public class ConsoleAccessoryRepository implements PanacheRepository<ConsoleAcce
     public void archiveConsoleAccessory(long id) {
         ConsoleAccessory consoleAccessoryToArchive = findById(id);
         if (consoleAccessoryToArchive != null) {
-            consoleAccessoryToArchive.setArchived(!consoleAccessoryToArchive.getArchived());
+            consoleAccessoryToArchive.setIsArchived(!consoleAccessoryToArchive.getIsArchived());
             persist(consoleAccessoryToArchive);
         }
     }

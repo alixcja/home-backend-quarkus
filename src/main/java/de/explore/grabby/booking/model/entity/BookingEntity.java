@@ -4,6 +4,7 @@ package de.explore.grabby.booking.model.entity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -22,14 +23,14 @@ public abstract class BookingEntity implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "type")
+    @Column(insertable=false, updatable=false)
     private String type;
 
     @Column(name = "isArchived")
-    private Boolean isArchived;
+    private Boolean isArchived = false;
 
     @Column(name = "addedOn")
-    private Date addedOn;
+    private LocalDate addedOn = LocalDate.now();
 
     public BookingEntity() {
     }
@@ -39,7 +40,7 @@ public abstract class BookingEntity implements Serializable {
         this.description = description;
         this.type = type;
         this.isArchived = false;
-        this.addedOn = new Date();
+        this.addedOn = LocalDate.now();
     }
 
     public int getId() {
@@ -66,27 +67,19 @@ public abstract class BookingEntity implements Serializable {
         this.description = description;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Boolean getArchived() {
+    public Boolean getIsArchived() {
         return isArchived;
     }
 
-    public void setArchived(Boolean archived) {
+    public void setIsArchived(Boolean archived) {
         isArchived = archived;
     }
 
-    public Date getAddedOn() {
+    public LocalDate getAddedOn() {
         return addedOn;
     }
 
-    public void setAddedOn(Date addedOn) {
+    public void setAddedOn(LocalDate addedOn) {
         this.addedOn = addedOn;
     }
 }

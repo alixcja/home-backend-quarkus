@@ -13,11 +13,11 @@ public class Game extends BookingEntity {
     private String consoleType;
 
     public Game() {
-        super();
+        // default
     }
 
-    public Game(String consoleType) {
-        super();
+    public Game(String name, String description, String consoleType) {
+        super(name, description, "game");
         this.consoleType = consoleType;
     }
 
