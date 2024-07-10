@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 @Entity
 public class Booking implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOOKING_SEQ")
     @SequenceGenerator(name = "BOOKING_SEQ", sequenceName = "BOOKING_TABLE_SEQ", allocationSize = 1)
