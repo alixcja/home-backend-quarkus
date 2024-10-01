@@ -18,11 +18,13 @@ public class Booking implements Serializable {
     @JoinColumn(name = "bookingEntity_id")
     @ManyToOne
     private BookingEntity bookedBookingEntity;
+    // TODO - Change these to LocalDAte
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private LocalDateTime bookingDate;
     private Boolean isCancelled;
     private Boolean isReturned;
+    // field to count how often booking was extended
 
     public Booking() {
     }
