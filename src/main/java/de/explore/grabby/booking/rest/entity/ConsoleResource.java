@@ -20,34 +20,20 @@ public class ConsoleResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public void addConsole(Console console) {
-        consoleRepository.persist(console);
+        consoleRepository.persistConsole(console);
     }
 
-    @Path("/{id}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Console getConsoleById(@PathParam("id") Long id) {
-        return consoleRepository.findById(id);
-    }
-
-    @Path("/all")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Console> getAllConsoles() {
-        return consoleRepository.listAll();
-    }
-
-    @Path("/{id}")
+    @Path("/update/{id}")
     @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    public void updateConsoleById(@PathParam("id") long id, Console console) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public void updateConsole(@PathParam("id") long id, Console console) {
         consoleRepository.updateConsole(id, console);
     }
 
-    @Path("/archive/{id}")
-    @PUT
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public void archiveConsole(@PathParam("id") long id) {
-        consoleRepository.archiveConsole(id);
+    public List<Console> getAllConsoles() {
+        return consoleRepository.getAllConsoles();
     }
 }

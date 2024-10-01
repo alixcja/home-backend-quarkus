@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
-@Path("/accessory")
+@Path("/accessories")
 public class ConsoleAccessoryResource {
 
     @Inject
@@ -20,34 +20,20 @@ public class ConsoleAccessoryResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public void addConsoleAccessory(ConsoleAccessory consoleAccessory) {
-        consoleAccessoryRepository.persist(consoleAccessory);
+        consoleAccessoryRepository.persistConsoleAccessory(consoleAccessory);
     }
 
-    @Path("/{id}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public ConsoleAccessory getConsoleAccessoryById(@PathParam("id") Long id) {
-        return consoleAccessoryRepository.findById(id);
-    }
-
-    @Path("/all")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<ConsoleAccessory> getAllConsoleAccessorys() {
-        return consoleAccessoryRepository.listAll();
-    }
-
-    @Path("/{id}")
+    @Path("/update/{id}")
     @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    public void updateConsoleAccessoryById(@PathParam("id") long id, ConsoleAccessory consoleAccessory) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public void updateConsoleAccessory(@PathParam("id") long id, ConsoleAccessory consoleAccessory) {
         consoleAccessoryRepository.updateConsoleAccessory(id, consoleAccessory);
     }
 
-    @Path("/archive/{id}")
-    @PUT
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public void archiveConsoleAccessory(@PathParam("id") long id) {
-        consoleAccessoryRepository.archiveConsoleAccessory(id);
+    public List<ConsoleAccessory> getAllConsoleAccessories() {
+        return consoleAccessoryRepository.getAllConsoleAccessories();
     }
 }

@@ -4,8 +4,21 @@ import de.explore.grabby.booking.model.entity.Game;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.util.List;
+
 @ApplicationScoped
 public class GameRepository implements PanacheRepository<Game> {
+
+    public void persistGame(Game gameToPersist) {
+        if (gameToPersist != null) {
+            persist(gameToPersist);
+        }
+    }
+
+    public List<Game> getAllGames() {
+        return listAll();
+    }
+
     public void updateGame(long id, Game game) {
         Game gameToUpdate = findById(id);
         if (gameToUpdate != null) {
@@ -13,14 +26,6 @@ public class GameRepository implements PanacheRepository<Game> {
             gameToUpdate.setDescription(game.getDescription());
             gameToUpdate.setConsoleType(game.getConsoleType());
             persist(gameToUpdate);
-        }
-    }
-
-    public void archiveGame(long id) {
-        Game gameToArchive = findById(id);
-        if (gameToArchive != null) {
-            gameToArchive.setIsArchived(!gameToArchive.getIsArchived());
-            persist(gameToArchive);
         }
     }
 }

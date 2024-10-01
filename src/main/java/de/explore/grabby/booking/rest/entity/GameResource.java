@@ -20,34 +20,21 @@ public class GameResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public void addGame(Game game) {
-        gameRepository.persist(game);
+        gameRepository.persistGame(game);
     }
 
-    @Path("/{id}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Game getGameById(@PathParam("id") Long id) {
-        return gameRepository.findById(id);
+    @Path("/update/{id}")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public void updateGame(@PathParam("id") long id, Game game) {
+        gameRepository.updateGame(id, game);
     }
 
     @Path("/all")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Game> getAllGames() {
-        return gameRepository.listAll();
-    }
-
-    @Path("/{id}")
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    public void updateGameById(@PathParam("id") long id, Game game) {
-        gameRepository.updateGame(id, game);
-    }
-
-    @Path("/archive/{id}")
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    public void archiveGame(@PathParam("id") long id) {
-        gameRepository.archiveGame(id);
+        return gameRepository.getAllGames();
     }
 }
