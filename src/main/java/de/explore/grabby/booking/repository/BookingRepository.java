@@ -60,8 +60,8 @@ public class BookingRepository implements PanacheRepository<Booking> {
     } else {
       requestedBooking.setEndDate(requestedDate);
       persist(requestedBooking);
+      return true;
     }
-
     // wir holen uns alle buchungen mit der entität dessen startdatum nach dem enddatum des jetztigen buchung ist
     // danach nehmen wir alle startdaten und überprüfen, ob diese vor dem gewünschten datum sind
   }
