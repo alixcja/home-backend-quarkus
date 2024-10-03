@@ -47,10 +47,6 @@ public abstract class BookingEntity implements Serializable {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
@@ -67,6 +63,10 @@ public abstract class BookingEntity implements Serializable {
         this.description = description;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public Boolean getIsArchived() {
         return isArchived;
     }
@@ -77,9 +77,5 @@ public abstract class BookingEntity implements Serializable {
 
     public LocalDate getAddedOn() {
         return addedOn;
-    }
-
-    public void setAddedOn(LocalDate addedOn) {
-        this.addedOn = addedOn;
     }
 }
