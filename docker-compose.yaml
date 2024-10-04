@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  home-backend:
+    image: alixcja/home-backend:1
+    container_name: home-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - QUARKUS_DATASOURCE_URL=jdbc:postgresql://home-postgres:5432/booking
+    depends_on:
+      - home-postgres
+    networks:
+      - app-network
+
+  home-postgres:
+    image: postgres:16
+    container_name: home-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=booking
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
