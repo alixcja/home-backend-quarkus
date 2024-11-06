@@ -6,25 +6,26 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
+import java.util.Objects;
 
 @ApplicationScoped
 public class ConsoleAccessoryRepository implements PanacheRepository<ConsoleAccessory> {
-    public void persistConsoleAccessory(ConsoleAccessory consoleAccessoryToPersist) {
-        if (consoleAccessoryToPersist != null) {
-            persist(consoleAccessoryToPersist);
-        }
+  public void persistConsoleAccessory(ConsoleAccessory consoleAccessoryToPersist) {
+    if (Objects.isNull(consoleAccessoryToPersist)) {
+      persist(consoleAccessoryToPersist);
     }
+  }
 
-    public List<ConsoleAccessory> getAllConsoleAccessories() {
-        return listAll();
+  public List<ConsoleAccessory> getAllConsoleAccessories() {
+    return listAll();
+  }
+
+  public void updateConsoleAccessory(long id, ConsoleAccessory consoleAccessory) {
+    ConsoleAccessory consoleAccessoryToUpdate = findById(id);
+    if (consoleAccessoryToUpdate != null) {
+      consoleAccessoryToUpdate.setName(consoleAccessory.getName());
+      consoleAccessoryToUpdate.setDescription(consoleAccessory.getDescription());
+      persist(consoleAccessoryToUpdate);
     }
-    
-    public void updateConsoleAccessory(long id, ConsoleAccessory consoleAccessory) {
-        ConsoleAccessory consoleAccessoryToUpdate = findById(id);
-        if (consoleAccessoryToUpdate != null) {
-            consoleAccessoryToUpdate.setName(consoleAccessory.getName());
-            consoleAccessoryToUpdate.setDescription(consoleAccessory.getDescription());
-            persist(consoleAccessoryToUpdate);
-        }
-    }
+  }
 }

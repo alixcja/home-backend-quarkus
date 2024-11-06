@@ -16,7 +16,7 @@ public class ConsoleAccessory extends BookingEntity {
     }
 
     public ConsoleAccessory(String name, String description, String consoleType) {
-        super(name, description, "game");
+        super(name, description, "accessory");
         this.consoleType = consoleType;
     }
 
