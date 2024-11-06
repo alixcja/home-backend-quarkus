@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
-@Path("/game")
+@Path("/games")
 public class GameResource {
 
     @Inject
@@ -31,7 +31,6 @@ public class GameResource {
         gameRepository.updateGame(id, game);
     }
 
-    @Path("/all")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Game> getAllGames() {

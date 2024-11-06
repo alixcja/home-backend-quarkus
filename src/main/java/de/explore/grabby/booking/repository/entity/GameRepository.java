@@ -5,12 +5,13 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
+import java.util.Objects;
 
 @ApplicationScoped
 public class GameRepository implements PanacheRepository<Game> {
 
     public void persistGame(Game gameToPersist) {
-        if (gameToPersist != null) {
+        if (Objects.isNull(gameToPersist)) {
             persist(gameToPersist);
         }
     }
