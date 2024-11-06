@@ -7,7 +7,11 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("console")
 public class Console extends BookingEntity {
 
-    public Console() {
-        super();
-    }
+  public Console() {
+    // default
+  }
+
+  public Console(String name, String description) {
+    super(name, description, "console");
+  }
 }

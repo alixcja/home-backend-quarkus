@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
-@Path("/console")
+@Path("/consoles")
 public class ConsoleResource {
 
     @Inject
