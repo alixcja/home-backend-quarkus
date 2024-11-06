@@ -1,10 +1,10 @@
 version: '3.8'
 services:
   home-backend:
-    image: alixcja/home-backend:1
+    image: alixcja/home-backend:2
     container_name: home-backend
     ports:
-      - "8080:8080"
+      - "8000:8080"
     environment:
       - QUARKUS_DATASOURCE_URL=jdbc:postgresql://home-postgres:5432/booking
     depends_on:
