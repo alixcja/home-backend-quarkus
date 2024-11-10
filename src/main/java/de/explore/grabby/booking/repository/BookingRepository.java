@@ -4,6 +4,7 @@ import de.explore.grabby.booking.model.booking.Booking;
 import de.explore.grabby.booking.model.entity.BookingEntity;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,9 +14,10 @@ import java.util.stream.Stream;
 @ApplicationScoped
 public class BookingRepository implements PanacheRepository<Booking> {
 
+  @Transactional
   public void create(List<Booking> newBookings) {
     for (Booking booking : newBookings) {
-      booking.setBookingDate(LocalDateTime.now());
+      booking.setBookingDate(LocalDate.now());
       booking.setIsReturned(false);
       booking.setIsCancelled(false);
       persist(booking);
@@ -24,7 +26,7 @@ public class BookingRepository implements PanacheRepository<Booking> {
 
   public void cancelById(long id) {
     Booking bookingToCancel = findById(id);
-    if (bookingToCancel != null) {
+    if (bookingToCancel != null && bookingToCancel.getStartDate().isAfter(LocalDate.now())) {
       bookingToCancel.setIsCancelled(true);
       persist(bookingToCancel);
     }
@@ -51,8 +53,8 @@ public class BookingRepository implements PanacheRepository<Booking> {
     if (requestedDays > 7) {
       throw new IllegalArgumentException("Man darf nicht mehr als sieben Tage verlängern.");
     }
-    LocalDateTime requestedDate = requestedBooking.getEndDate().plusDays(requestedDays);
-    List<Booking> bookingsWithRequestedEntity = findAllBookingsByEntity(entity, requestedDate);
+    LocalDate requestedDate = requestedBooking.getEndDate().plusDays(requestedDays);
+    List<Booking> bookingsWithRequestedEntity = findAllBookingsByEntity(requestedBooking.getBookingId(), entity, requestedDate);
     if (!bookingsWithRequestedEntity.isEmpty()) {
       // TODO - Create custom Excpetions
       throw new RuntimeException("Die gewünschte Entität ist leider verbucht.");
@@ -63,7 +65,7 @@ public class BookingRepository implements PanacheRepository<Booking> {
     }
   }
 
-  private List<Booking> findAllBookingsByEntity(BookingEntity entity, LocalDateTime requestedDate) {
-    return find("bookingEntity_id = ?1 and startDate <= ?2", entity.getId(), requestedDate).stream().toList();
+  private List<Booking> findAllBookingsByEntity(long id, BookingEntity entity, LocalDate requestedDate) {
+    return find("bookingId != ?1 and bookedBookingEntity = ?2 and startDate <= ?3", id, entity, requestedDate).stream().toList();
   }
 }

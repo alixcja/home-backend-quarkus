@@ -4,6 +4,7 @@ import de.explore.grabby.booking.model.entity.BookingEntity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,10 +19,9 @@ public class Booking implements Serializable {
     @JoinColumn(name = "bookingEntity_id")
     @ManyToOne
     private BookingEntity bookedBookingEntity;
-    // TODO - Change these to LocalDAte
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private LocalDateTime bookingDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private LocalDate bookingDate;
     private Boolean isCancelled;
     private Boolean isReturned;
     // field to count how often booking was extended
@@ -29,11 +29,12 @@ public class Booking implements Serializable {
     public Booking() {
     }
 
-    public Booking(String userId, BookingEntity bookedBookingEntity, LocalDateTime startDate, LocalDateTime endDate) {
+    public Booking(String userId, BookingEntity bookedBookingEntity, LocalDate startDate, LocalDate endDate) {
         this.userId = userId;
         this.bookedBookingEntity = bookedBookingEntity;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.bookingDate = LocalDate.now();
         this.isCancelled = false;
         this.isReturned = false;
     }
@@ -62,27 +63,27 @@ public class Booking implements Serializable {
         this.bookedBookingEntity = bookedBookingEntity;
     }
 
-    public LocalDateTime getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDateTime getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
-    public LocalDateTime getBookingDate() {
+    public LocalDate getBookingDate() {
         return bookingDate;
     }
 
-    public void setBookingDate(LocalDateTime bookingDate) {
+    public void setBookingDate(LocalDate bookingDate) {
         this.bookingDate = bookingDate;
     }
 

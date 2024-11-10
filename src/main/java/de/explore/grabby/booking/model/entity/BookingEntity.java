@@ -1,16 +1,24 @@
 package de.explore.grabby.booking.model.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Game.class, name = "game"),
+        @JsonSubTypes.Type(value = Console.class, name = "console"),
+        @JsonSubTypes.Type(value = ConsoleAccessory.class, name = "accessory")
+})
 public abstract class BookingEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ENTITY_SEQ")
     @SequenceGenerator(name = "ENTITY_SEQ", sequenceName = "BOOKING_ENTITY_TABLE_SEQ", allocationSize = 1)
@@ -23,7 +31,7 @@ public abstract class BookingEntity implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @Column(insertable=false, updatable=false)
+    @Column(insertable = false, updatable = false)
     private String type;
 
     @Column(name = "isArchived")

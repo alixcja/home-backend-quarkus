@@ -4,6 +4,7 @@ import de.explore.grabby.booking.model.booking.Booking;
 import de.explore.grabby.booking.repository.BookingRepository;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class BookingResource {
 
   @Path("/new")
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   public void createBookings(List<Booking> newBookings) {
     bookingRepository.create(newBookings);
   }
