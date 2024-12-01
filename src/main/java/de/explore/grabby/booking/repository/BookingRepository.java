@@ -47,8 +47,8 @@ public class BookingRepository implements PanacheRepository<Booking> {
     return collectionOfBookingsByUserId.toList();
   }
 
-  public Boolean extendById(long id, long requestedDays) {
-    Booking requestedBooking = findById(id);
+  public Boolean extendById(long bookingId, long requestedDays) {
+    Booking requestedBooking = findById(bookingId);
     BookingEntity entity = requestedBooking.getBookedBookingEntity();
     if (requestedDays > 7) {
       throw new IllegalArgumentException("Man darf nicht mehr als sieben Tage verlängern.");
@@ -66,6 +66,7 @@ public class BookingRepository implements PanacheRepository<Booking> {
   }
 
   private List<Booking> findAllBookingsByEntity(long id, BookingEntity entity, LocalDate requestedDate) {
-    return find("bookingId != ?1 and bookedBookingEntity = ?2 and startDate <= ?3", id, entity, requestedDate).stream().toList();
+    return find("bookingId != ?1 and bookedBookingEntity = ?2 and startDate <= ?3", id, entity, requestedDate)
+            .list();
   }
 }

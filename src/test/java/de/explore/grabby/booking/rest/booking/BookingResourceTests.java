@@ -12,7 +12,6 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -121,12 +120,29 @@ class BookingResourceTests {
   }
 
   @Test
-  @Disabled
-  void shouldNotExtendBooking() {
+  void shouldNotExtendBookingDueOtherBookings() {
+    createAnotherBooking();
     given()
             .when()
             .pathParams("id", booking1.getBookingId())
             .body(2)
+            .put("/extend/{id}")
+            .then()
+            .statusCode(500);
+  }
+
+  @Transactional
+  public void createAnotherBooking() {
+    Booking booking3 = new Booking("user-1", game, LocalDate.now().plusDays(3), LocalDate.now().plusDays(8));
+    bookingRepository.persist(booking3);
+  }
+
+  @Test
+  void shouldNotExtendBookingDueToMuchDays() {
+    given()
+            .when()
+            .pathParams("id", booking1.getBookingId())
+            .body(9)
             .put("/extend/{id}")
             .then()
             .statusCode(500);
