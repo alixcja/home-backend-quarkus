@@ -1,9 +1,10 @@
-package de.explore.grabby.booking.rest;
+package de.explore.grabby.booking.rest.favorite;
 
 import de.explore.grabby.booking.model.Favorite;
 import de.explore.grabby.booking.repository.FavoriteRepository;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class FavoriteResource {
   }
 
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   public void addNewFavorite(Favorite favorite) {
     favoriteRepository.addNewFavorite(favorite);
   }
@@ -30,6 +32,6 @@ public class FavoriteResource {
   @DELETE
   @Path("/{id}")
   public void deleteFavorite(@PathParam("id") long id) {
-    favoriteRepository.deleteById(id);
+    favoriteRepository.delete(id);
   }
 }

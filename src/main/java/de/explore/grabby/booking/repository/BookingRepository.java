@@ -40,13 +40,6 @@ public class BookingRepository implements PanacheRepository<Booking> {
     }
   }
 
-  public List<Booking> returnAllBookingsByUserId(String userId) {
-    Stream<Booking> collectionOfBookingsByUserId = listAll().stream().filter(booking -> {
-      return booking.getUserId().equals(userId);
-    });
-    return collectionOfBookingsByUserId.toList();
-  }
-
   public Boolean extendById(long bookingId, long requestedDays) {
     Booking requestedBooking = findById(bookingId);
     BookingEntity entity = requestedBooking.getBookedBookingEntity();
