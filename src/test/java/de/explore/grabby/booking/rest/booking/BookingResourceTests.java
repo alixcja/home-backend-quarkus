@@ -30,6 +30,8 @@ class BookingResourceTests {
   private Booking booking1;
   private Booking booking2;
   private Game game;
+  private Booking booking3;
+  private Booking booking4;
 
   @Inject
   public BookingResourceTests(BookingRepository bookingRepository, GameRepository gameRepository, ConsoleRepository consoleRepository) {
@@ -37,6 +39,14 @@ class BookingResourceTests {
     this.gameRepository = gameRepository;
     this.consoleRepository = consoleRepository;
   }
+  /*
+
+  Restructure a little bit; there should be four endpoints:
+  1. Get all not overdue bookings
+  2. Get all overdue bookings
+  3. Get all bookings in the past
+  4. Get all bookings - not overdue, overdue, already in the past
+   */
 
   @BeforeEach
   @Transactional
@@ -49,8 +59,11 @@ class BookingResourceTests {
 
     booking1 = new Booking("user-1", game, LocalDate.now(), LocalDate.now().plusDays(2));
     booking2 = new Booking("user-1", game, LocalDate.now().plusDays(5), LocalDate.now().plusDays(10));
+    booking3 = new Booking("user-1", game, LocalDate.now().minusDays(5), LocalDate.now().minusDays(3));
+    booking3.setIsReturned(true);
+    booking4 = new Booking("user-1", game, LocalDate.now().minusDays(15), LocalDate.now().minusDays(10));
 
-    bookingRepository.persist(booking1, booking2);
+    bookingRepository.persist(booking1, booking2, booking3, booking4);
   }
 
   @Test
@@ -71,7 +84,7 @@ class BookingResourceTests {
             .get()
             .then()
             .statusCode(200)
-            .body("size()", is(2));
+            .body("size()", is(3));
   }
 
   @Test
@@ -129,6 +142,16 @@ class BookingResourceTests {
             .put("/extend/{id}")
             .then()
             .statusCode(500);
+  }
+
+  @Test
+  void shouldReturnOverdueBooking() {
+    given()
+            .when()
+            .get("/overdue")
+            .then()
+            .body("size()", is(1))
+            .body("[0].isReturned", is(false));
   }
 
   @Transactional

@@ -54,4 +54,10 @@ public class BookingResource {
   public Boolean extendBookingById(@PathParam("id") long id, int requestedDays) {
     return bookingRepository.extendById(id, requestedDays);
   }
+
+  @Path("/overdue")
+  @GET
+  public List<Booking> getAllOverdueBookings() {
+    return bookingRepository.listAllOverdueBookings();
+  }
 }

@@ -7,9 +7,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Stream;
 
 @ApplicationScoped
 public class BookingRepository implements PanacheRepository<Booking> {
@@ -24,6 +22,7 @@ public class BookingRepository implements PanacheRepository<Booking> {
     }
   }
 
+  @Transactional
   public void cancelById(long id) {
     Booking bookingToCancel = findById(id);
     if (bookingToCancel != null && bookingToCancel.getStartDate().isAfter(LocalDate.now())) {
@@ -40,6 +39,7 @@ public class BookingRepository implements PanacheRepository<Booking> {
     }
   }
 
+  @Transactional
   public Boolean extendById(long bookingId, long requestedDays) {
     Booking requestedBooking = findById(bookingId);
     BookingEntity entity = requestedBooking.getBookedBookingEntity();
@@ -47,7 +47,7 @@ public class BookingRepository implements PanacheRepository<Booking> {
       throw new IllegalArgumentException("Man darf nicht mehr als sieben Tage verlängern.");
     }
     LocalDate requestedDate = requestedBooking.getEndDate().plusDays(requestedDays);
-    List<Booking> bookingsWithRequestedEntity = findAllBookingsByEntity(requestedBooking.getBookingId(), entity, requestedDate);
+    List<Booking> bookingsWithRequestedEntity = findAllBookingsByEntityAndStartDateAfterRequestedDate(requestedBooking.getBookingId(), entity, requestedDate);
     if (!bookingsWithRequestedEntity.isEmpty()) {
       // TODO - Create custom Excpetions
       throw new RuntimeException("Die gewünschte Entität ist leider verbucht.");
@@ -58,8 +58,12 @@ public class BookingRepository implements PanacheRepository<Booking> {
     }
   }
 
-  private List<Booking> findAllBookingsByEntity(long id, BookingEntity entity, LocalDate requestedDate) {
+  private List<Booking> findAllBookingsByEntityAndStartDateAfterRequestedDate(long id, BookingEntity entity, LocalDate requestedDate) {
     return find("bookingId != ?1 and bookedBookingEntity = ?2 and startDate <= ?3", id, entity, requestedDate)
             .list();
+  }
+
+  public List<Booking> listAllOverdueBookings() {
+    return find("isReturned = False and endDate <= ?1", LocalDate.now()).stream().toList();
   }
 }
