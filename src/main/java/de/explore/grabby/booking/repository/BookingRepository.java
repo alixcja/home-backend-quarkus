@@ -46,8 +46,9 @@ public class BookingRepository implements PanacheRepository<Booking> {
     if (requestedDays > 7) {
       throw new IllegalArgumentException("Man darf nicht mehr als sieben Tage verlängern.");
     }
-    LocalDate requestedDate = requestedBooking.getEndDate().plusDays(requestedDays);
-    List<Booking> bookingsWithRequestedEntity = findAllBookingsByEntityAndStartDateAfterRequestedDate(requestedBooking.getBookingId(), entity, requestedDate);
+    LocalDate endDate = requestedBooking.getEndDate();
+    LocalDate requestedDate = endDate.plusDays(requestedDays);
+    List<Booking> bookingsWithRequestedEntity = findAllBookingsByEntityAndByStartDateAfterRequestedDate(requestedBooking.getBookingId(), entity, requestedDate, endDate);
     if (!bookingsWithRequestedEntity.isEmpty()) {
       // TODO - Create custom Excpetions
       throw new RuntimeException("Die gewünschte Entität ist leider verbucht.");
@@ -58,12 +59,16 @@ public class BookingRepository implements PanacheRepository<Booking> {
     }
   }
 
-  private List<Booking> findAllBookingsByEntityAndStartDateAfterRequestedDate(long id, BookingEntity entity, LocalDate requestedDate) {
-    return find("bookingId != ?1 and bookedBookingEntity = ?2 and startDate <= ?3", id, entity, requestedDate)
+  private List<Booking> findAllBookingsByEntityAndByStartDateAfterRequestedDate(long id, BookingEntity entity, LocalDate requestedDate, LocalDate endDate) {
+    return find("bookingId != ?1 and bookedBookingEntity = ?2 and startDate <= ?3 and endDate >= ?4", id, entity, requestedDate, endDate)
             .list();
   }
 
   public List<Booking> listAllOverdueBookings() {
     return find("isReturned = False and endDate <= ?1", LocalDate.now()).stream().toList();
+  }
+
+  public List<Booking> listAllCurrentAndInFutureBookings() {
+    return find("startDate >= ?1", LocalDate.now()).stream().toList();
   }
 }

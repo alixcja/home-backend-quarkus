@@ -27,6 +27,18 @@ public class BookingResource {
   // TODO - Implement user logic
   @GET
   public List<Booking> getAllBookings() {
+    return bookingRepository.listAllCurrentAndInFutureBookings();
+  }
+
+  @Path("/overdue")
+  @GET
+  public List<Booking> getAllOverdueBookings() {
+    return bookingRepository.listAllOverdueBookings();
+  }
+
+  @Path("/all")
+  @GET
+  public List<Booking> getAllCurrentAndInFutureBookings() {
     return bookingRepository.listAll();
   }
 
@@ -53,11 +65,5 @@ public class BookingResource {
   @PUT
   public Boolean extendBookingById(@PathParam("id") long id, int requestedDays) {
     return bookingRepository.extendById(id, requestedDays);
-  }
-
-  @Path("/overdue")
-  @GET
-  public List<Booking> getAllOverdueBookings() {
-    return bookingRepository.listAllOverdueBookings();
   }
 }

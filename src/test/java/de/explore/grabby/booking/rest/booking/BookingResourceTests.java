@@ -39,14 +39,6 @@ class BookingResourceTests {
     this.gameRepository = gameRepository;
     this.consoleRepository = consoleRepository;
   }
-  /*
-
-  Restructure a little bit; there should be four endpoints:
-  1. Get all not overdue bookings
-  2. Get all overdue bookings
-  3. Get all bookings in the past
-  4. Get all bookings - not overdue, overdue, already in the past
-   */
 
   @BeforeEach
   @Transactional
@@ -81,10 +73,30 @@ class BookingResourceTests {
   void shouldReturnAllBookings() {
     given()
             .when()
+            .get("/all")
+            .then()
+            .statusCode(200)
+            .body("size()", is(4));
+  }
+
+  @Test
+  void shouldReturnOverdueBooking() {
+    given()
+            .when()
+            .get("/overdue")
+            .then()
+            .body("size()", is(1))
+            .body("[0].isReturned", is(false));
+  }
+
+  @Test
+  void shouldReturnCurrentAndInFutureBookings() {
+    given()
+            .when()
             .get()
             .then()
             .statusCode(200)
-            .body("size()", is(3));
+            .body("size()", is(2));
   }
 
   @Test
@@ -142,16 +154,6 @@ class BookingResourceTests {
             .put("/extend/{id}")
             .then()
             .statusCode(500);
-  }
-
-  @Test
-  void shouldReturnOverdueBooking() {
-    given()
-            .when()
-            .get("/overdue")
-            .then()
-            .body("size()", is(1))
-            .body("[0].isReturned", is(false));
   }
 
   @Transactional
