@@ -8,6 +8,9 @@ import de.explore.grabby.booking.repository.entity.ConsoleRepository;
 import de.explore.grabby.booking.repository.entity.GameRepository;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.oidc.Claim;
+import io.quarkus.test.security.oidc.OidcSecurity;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -22,6 +25,7 @@ import static org.hamcrest.Matchers.is;
 
 @TestHTTPEndpoint(BookingResource.class)
 @QuarkusTest
+@TestSecurity(authorizationEnabled = false)
 class BookingResourceTests {
 
   private final BookingRepository bookingRepository;
@@ -30,8 +34,6 @@ class BookingResourceTests {
   private Booking booking1;
   private Booking booking2;
   private Game game;
-  private Booking booking3;
-  private Booking booking4;
 
   @Inject
   public BookingResourceTests(BookingRepository bookingRepository, GameRepository gameRepository, ConsoleRepository consoleRepository) {
@@ -49,13 +51,16 @@ class BookingResourceTests {
     gameRepository.persist(game);
     consoleRepository.persist(console);
 
-    booking1 = new Booking("user-1", game, LocalDate.now(), LocalDate.now().plusDays(2));
-    booking2 = new Booking("user-1", game, LocalDate.now().plusDays(5), LocalDate.now().plusDays(10));
-    booking3 = new Booking("user-1", game, LocalDate.now().minusDays(5), LocalDate.now().minusDays(3));
+    booking1 = new Booking("ghi789", game, LocalDate.now(), LocalDate.now().plusDays(2));
+    booking2 = new Booking("ghi789", game, LocalDate.now().plusDays(5), LocalDate.now().plusDays(10));
+    Booking booking3 = new Booking("ghi789", game, LocalDate.now().minusDays(5), LocalDate.now().minusDays(3));
     booking3.setIsReturned(true);
-    booking4 = new Booking("user-1", game, LocalDate.now().minusDays(15), LocalDate.now().minusDays(10));
+    Booking booking4 = new Booking("ghi789", game, LocalDate.now().minusDays(15), LocalDate.now().minusDays(10));
 
-    bookingRepository.persist(booking1, booking2, booking3, booking4);
+    Booking booking5 = new Booking("abc123", console, LocalDate.now().plusDays(7), LocalDate.now().plusDays(10));
+    Booking booking6 = new Booking("def456", console, LocalDate.now().plusDays(15), LocalDate.now().plusDays(20));
+
+    bookingRepository.persist(booking1, booking2, booking3, booking4, booking5, booking6);
   }
 
   @Test
@@ -70,6 +75,12 @@ class BookingResourceTests {
   }
 
   @Test
+  @TestSecurity(user = "Hans Müller")
+  @OidcSecurity(
+          claims = {
+                  @Claim(key = "sub", value = "ghi789")
+          }
+  )
   void shouldReturnAllBookings() {
     given()
             .when()
@@ -80,6 +91,12 @@ class BookingResourceTests {
   }
 
   @Test
+  @TestSecurity(user = "Hans Müller")
+  @OidcSecurity(
+          claims = {
+                  @Claim(key = "sub", value = "ghi789")
+          }
+  )
   void shouldReturnOverdueBooking() {
     given()
             .when()
@@ -90,6 +107,12 @@ class BookingResourceTests {
   }
 
   @Test
+  @TestSecurity(user = "Hans Müller")
+  @OidcSecurity(
+          claims = {
+                  @Claim(key = "sub", value = "ghi789")
+          }
+  )
   void shouldReturnCurrentAndInFutureBookings() {
     given()
             .when()
@@ -100,6 +123,12 @@ class BookingResourceTests {
   }
 
   @Test
+  @TestSecurity(user = "Hans Müller")
+  @OidcSecurity(
+          claims = {
+                  @Claim(key = "sub", value = "ghi789")
+          }
+  )
   void shouldPersistNewBooking() {
     Booking newBooking = new Booking("user-2", game, LocalDate.now().plusDays(2), LocalDate.now().plusDays(40));
 

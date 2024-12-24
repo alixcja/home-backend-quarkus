@@ -13,11 +13,12 @@ import java.util.List;
 public class BookingRepository implements PanacheRepository<Booking> {
 
   @Transactional
-  public void create(List<Booking> newBookings) {
+  public void create(List<Booking> newBookings, String userId) {
     for (Booking booking : newBookings) {
       booking.setBookingDate(LocalDate.now());
       booking.setIsReturned(false);
       booking.setIsCancelled(false);
+      booking.setUserId(userId);
       persist(booking);
     }
   }
@@ -64,11 +65,15 @@ public class BookingRepository implements PanacheRepository<Booking> {
             .list();
   }
 
-  public List<Booking> listAllOverdueBookings() {
-    return find("isReturned = False and endDate <= ?1", LocalDate.now()).stream().toList();
+  public List<Booking> listAllOverdueBookings(String userId) {
+    return find("isReturned = False and endDate <= ?1 and userId = ?2", LocalDate.now(), userId).stream().toList();
   }
 
-  public List<Booking> listAllCurrentAndInFutureBookings() {
-    return find("startDate >= ?1", LocalDate.now()).stream().toList();
+  public List<Booking> listAllCurrentAndInFutureBookings(String userId) {
+    return find("startDate >= ?1 and userId = ?2", LocalDate.now(), userId).stream().toList();
+  }
+
+  public List<Booking> listAllBookings(String userId) {
+    return find("userId = ?1", userId).stream().toList();
   }
 }

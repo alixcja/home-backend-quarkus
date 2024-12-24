@@ -15,6 +15,7 @@ public class ConsoleResource {
     @Inject
     ConsoleRepository consoleRepository;
 
+    // TODO - Only Admins
     @Path("/create")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -23,6 +24,7 @@ public class ConsoleResource {
         consoleRepository.persistConsole(console);
     }
 
+    // TODO - Only Admins
     @Path("/update/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)

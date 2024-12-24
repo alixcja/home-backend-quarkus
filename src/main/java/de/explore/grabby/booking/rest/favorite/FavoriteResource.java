@@ -5,28 +5,30 @@ import de.explore.grabby.booking.repository.FavoriteRepository;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.List;
 
 @Path("/favorites")
 public class FavoriteResource {
   private final FavoriteRepository favoriteRepository;
+  private final JsonWebToken jwt;
 
   @Inject
-  public FavoriteResource(FavoriteRepository favoriteRepository) {
+  public FavoriteResource(FavoriteRepository favoriteRepository, JsonWebToken jwt) {
     this.favoriteRepository = favoriteRepository;
+    this.jwt = jwt;
   }
 
-  // TODO - Implement user logic
   @GET
   public List<Favorite> getAllFavorites() {
-    return favoriteRepository.listAll();
+    return favoriteRepository.listAllFavorites(jwt.getSubject());
   }
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   public void addNewFavorite(Favorite favorite) {
-    favoriteRepository.addNewFavorite(favorite);
+    favoriteRepository.addNewFavorite(favorite, jwt.getSubject());
   }
 
   @DELETE

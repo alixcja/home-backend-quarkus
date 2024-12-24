@@ -15,6 +15,7 @@ public class GameResource {
     @Inject
     GameRepository gameRepository;
 
+    // TODO - Only Admins
     @Path("/create")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -23,6 +24,7 @@ public class GameResource {
         gameRepository.persistGame(game);
     }
 
+    // TODO - Only Admins
     @Path("/update/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)

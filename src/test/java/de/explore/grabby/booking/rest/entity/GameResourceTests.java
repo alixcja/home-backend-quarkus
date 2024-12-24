@@ -4,6 +4,7 @@ import de.explore.grabby.booking.model.entity.Game;
 import de.explore.grabby.booking.repository.entity.GameRepository;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -15,6 +16,7 @@ import static org.hamcrest.Matchers.is;
 
 @TestHTTPEndpoint(GameResource.class)
 @QuarkusTest
+@TestSecurity(authorizationEnabled = false)
 class GameResourceTests {
 
   private Game game1;

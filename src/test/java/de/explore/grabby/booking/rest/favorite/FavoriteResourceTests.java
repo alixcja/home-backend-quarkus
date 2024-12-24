@@ -6,6 +6,9 @@ import de.explore.grabby.booking.repository.FavoriteRepository;
 import de.explore.grabby.booking.repository.entity.GameRepository;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.oidc.Claim;
+import io.quarkus.test.security.oidc.OidcSecurity;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.MediaType;
@@ -16,8 +19,9 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
-@QuarkusTest
 @TestHTTPEndpoint(FavoriteResource.class)
+@QuarkusTest
+@TestSecurity(authorizationEnabled = false)
 class FavoriteResourceTests {
 
   private final FavoriteRepository favoriteRepository;
@@ -40,13 +44,20 @@ class FavoriteResourceTests {
 
     gameRepository.persist(game1, game2, game3);
 
-    favorite1 = new Favorite("user-1", game1);
-    Favorite favorite2 = new Favorite("user-1", game2);
+    favorite1 = new Favorite("ghi789", game1);
+    Favorite favorite2 = new Favorite("ghi789", game2);
+    Favorite favorite3 = new Favorite("user-1", game2);
 
-    favoriteRepository.persist(favorite1, favorite2);
+    favoriteRepository.persist(favorite1, favorite2, favorite3);
   }
 
   @Test
+  @TestSecurity(user = "Hans Müller")
+  @OidcSecurity(
+          claims = {
+                  @Claim(key = "sub", value = "ghi789")
+          }
+  )
   void getAllFavorites() {
     given()
             .when()
@@ -57,8 +68,14 @@ class FavoriteResourceTests {
   }
 
   @Test
+  @TestSecurity(user = "Hans Müller")
+  @OidcSecurity(
+          claims = {
+                  @Claim(key = "sub", value = "ghi789")
+          }
+  )
   void shouldPersistNewFavorite() {
-    Favorite favorite = new Favorite("user-1", game3);
+    Favorite favorite = new Favorite("ghi789", game3);
 
     given()
             .when()

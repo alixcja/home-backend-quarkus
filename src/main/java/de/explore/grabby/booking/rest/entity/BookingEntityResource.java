@@ -37,11 +37,14 @@ public class BookingEntityResource {
         return bookingEntityRepository.listAll();
     }
 
+    // TODO - Only admins should be able to use this endpoint
     @POST
     @Path("/create/testdata")
     public void createTestBookingEntities() {
         createTestData();
     }
+
+    // TODO - Admins should be able to persist their entities data
 
     @Transactional
     public void createTestData() {

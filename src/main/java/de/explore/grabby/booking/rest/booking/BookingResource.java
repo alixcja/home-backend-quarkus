@@ -5,6 +5,7 @@ import de.explore.grabby.booking.repository.BookingRepository;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.List;
 
@@ -12,10 +13,12 @@ import java.util.List;
 public class BookingResource {
 
   private final BookingRepository bookingRepository;
+  private final JsonWebToken jwt;
 
   @Inject
-  public BookingResource(BookingRepository bookingRepository) {
+  public BookingResource(BookingRepository bookingRepository, JsonWebToken jwt) {
     this.bookingRepository = bookingRepository;
+    this.jwt = jwt;
   }
 
   @Path("/{id}")
@@ -24,29 +27,28 @@ public class BookingResource {
     return bookingRepository.findById(id);
   }
 
-  // TODO - Implement user logic
   @GET
   public List<Booking> getAllBookings() {
-    return bookingRepository.listAllCurrentAndInFutureBookings();
+    return bookingRepository.listAllCurrentAndInFutureBookings(jwt.getSubject());
   }
 
   @Path("/overdue")
   @GET
   public List<Booking> getAllOverdueBookings() {
-    return bookingRepository.listAllOverdueBookings();
+    return bookingRepository.listAllOverdueBookings(jwt.getSubject());
   }
 
   @Path("/all")
   @GET
   public List<Booking> getAllCurrentAndInFutureBookings() {
-    return bookingRepository.listAll();
+    return bookingRepository.listAllBookings(jwt.getSubject());
   }
 
   @Path("/new")
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   public void createBookings(List<Booking> newBookings) {
-    bookingRepository.create(newBookings);
+    bookingRepository.create(newBookings, jwt.getSubject());
   }
 
   @Path("/cancel/{id}")
