@@ -1,20 +1,30 @@
 version: '3.8'
 services:
   home-backend:
-    image: alixcja/home-backend:3
+    image: alixcja/home-backend:dev-6
     container_name: home-backend
     ports:
       - "8000:8080"
     environment:
       - QUARKUS_DATASOURCE_URL=jdbc:postgresql://home-postgres:5432/booking
+      - QUARKUS_OIDC_AUTH_SERVER_URL=http://home-keycloak:8080/realms/master
+      - QUARKUS_OIDC_CLIENT_ID=exp-home
+      - QUARKUS_OIDC_CONNECTION_TIMEOUT=10s
+      - QUARKUS_OIDC_DISCOVERY_REFRESH_INTERVAL=60s
+      - QUARKUS_OIDC_RETRY_ATTEMPTS=5
+      - QUARKUS_OIDC_RETRY_INTERVAL=5s
+      - QUARKUS_LOG_MIN_LEVEL=DEBUG
     depends_on:
       - home-postgres
+      - home-keycloak
     networks:
       - app-network
 
   home-postgres:
     image: postgres:16
     container_name: home-postgres
+    volumes:
+      - home_postgres_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -24,6 +34,49 @@ services:
     networks:
       - app-network
 
+  home-keycloak:
+    image: quay.io/keycloak/keycloak:26.1
+    container_name: home-keycloak
+    command: start
+    environment:
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_STRICT_BACKCHANNEL: false
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://home-keycloak-postgres/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+    ports:
+      - 8888:8080
+    restart: always
+    depends_on:
+      - home-keycloak-postgres
+    networks:
+      - app-network
+
+  home-keycloak-postgres:
+    image: postgres:16
+    container_name: home-keycloak-postgres
+    volumes:
+      - keycloak_postgres_data:/var/lib/postgresql/data
+    environment:
+        - POSTGRES_DB=keycloak
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+    networks:
+      - app-network
+    ports:
+      - "5433:5432"
+
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  keycloak_postgres_data:
+    driver: local
+  home_postgres_data:
+    driver: local
