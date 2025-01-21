@@ -1,13 +1,13 @@
 version: '3.8'
 services:
-  home-backend:
+  backend:
     image: alixcja/home-backend:dev-6
-    container_name: home-backend
+    container_name: backend
     ports:
       - "8000:8080"
     environment:
-      - QUARKUS_DATASOURCE_URL=jdbc:postgresql://home-postgres:5432/booking
-      - QUARKUS_OIDC_AUTH_SERVER_URL=http://home-keycloak:8080/realms/master
+      - QUARKUS_DATASOURCE_URL=jdbc:postgresql://postgres:5432/booking
+      - QUARKUS_OIDC_AUTH_SERVER_URL=http://keycloak:8080/realms/master
       - QUARKUS_OIDC_CLIENT_ID=exp-home
       - QUARKUS_OIDC_CONNECTION_TIMEOUT=10s
       - QUARKUS_OIDC_DISCOVERY_REFRESH_INTERVAL=60s
@@ -15,14 +15,14 @@ services:
       - QUARKUS_OIDC_RETRY_INTERVAL=5s
       - QUARKUS_LOG_MIN_LEVEL=DEBUG
     depends_on:
-      - home-postgres
-      - home-keycloak
+      - postgres
+      - keycloak
     networks:
       - app-network
 
-  home-postgres:
+  postgres:
     image: postgres:16
-    container_name: home-postgres
+    container_name: postgres
     volumes:
       - home_postgres_data:/var/lib/postgresql/data
     environment:
@@ -34,9 +34,9 @@ services:
     networks:
       - app-network
 
-  home-keycloak:
+  keycloak:
     image: quay.io/keycloak/keycloak:26.1
-    container_name: home-keycloak
+    container_name: keycloak
     command: start
     environment:
       KC_HOSTNAME: localhost
@@ -46,20 +46,20 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://home-keycloak-postgres/keycloak
+      KC_DB_URL: jdbc:postgresql://keycloak-postgres/keycloak
       KC_DB_USERNAME: postgres
       KC_DB_PASSWORD: postgres
     ports:
       - 8888:8080
     restart: always
     depends_on:
-      - home-keycloak-postgres
+      - keycloak-postgres
     networks:
       - app-network
 
-  home-keycloak-postgres:
+  keycloak-postgres:
     image: postgres:16
-    container_name: home-keycloak-postgres
+    container_name: keycloak-postgres
     volumes:
       - keycloak_postgres_data:/var/lib/postgresql/data
     environment:
@@ -71,6 +71,22 @@ services:
     ports:
       - "5433:5432"
 
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-01-20T14-49-07Z
+    container_name: minio
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    command: server /data --console-address ":9001"
+    networks:
+      - app-network
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+
 networks:
   app-network:
     driver: bridge
@@ -79,4 +95,6 @@ volumes:
   keycloak_postgres_data:
     driver: local
   home_postgres_data:
+    driver: local
+  minio_data:
     driver: local

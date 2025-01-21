@@ -40,6 +40,7 @@ public class BookingRepository implements PanacheRepository<Booking> {
     }
   }
 
+  // TODO: Move it in a bookingService class
   @Transactional
   public Boolean extendById(long bookingId, long requestedDays) {
     Booking requestedBooking = findById(bookingId);

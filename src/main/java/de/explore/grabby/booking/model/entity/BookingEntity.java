@@ -3,6 +3,7 @@ package de.explore.grabby.booking.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import de.explore.grabby.booking.model.entity.embedded.Image;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -25,20 +26,19 @@ public abstract class BookingEntity implements Serializable {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
     private String description;
 
     @Column(insertable = false, updatable = false)
     private String type;
 
-    @Column(name = "isArchived")
     private Boolean isArchived = false;
 
-    @Column(name = "addedOn")
     private LocalDate addedOn = LocalDate.now();
+
+    @Embedded
+    private Image image;
 
     public BookingEntity() {
     }
@@ -51,7 +51,7 @@ public abstract class BookingEntity implements Serializable {
         this.addedOn = LocalDate.now();
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -85,5 +85,13 @@ public abstract class BookingEntity implements Serializable {
 
     public LocalDate getAddedOn() {
         return addedOn;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 }

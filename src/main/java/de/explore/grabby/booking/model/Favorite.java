@@ -11,8 +11,10 @@ public class Favorite {
     @SequenceGenerator(name = "FAVORITE_SEQ", sequenceName = "FAVORITE_TABLE_SEQ", allocationSize = 1)
     @Column(name = "id")
     private int favoriteId;
+
     @Column(name = "user_id")
     private String userId;
+
     @JoinColumn(name = "bookingEntity_id")
     @ManyToOne
     private BookingEntity favorite;
