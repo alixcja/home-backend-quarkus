@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 public class Booking implements Serializable {
@@ -14,6 +13,7 @@ public class Booking implements Serializable {
   @SequenceGenerator(name = "BOOKING_SEQ", sequenceName = "BOOKING_TABLE_SEQ", allocationSize = 1)
 
   @Column(name = "id")
+  // TODO: Rename to id
   private int bookingId;
 
   @Column(name = "user_id")
@@ -21,6 +21,7 @@ public class Booking implements Serializable {
 
   @JoinColumn(name = "bookingEntity_id")
   @ManyToOne
+  // TODO: Rename to bookingentity
   private BookingEntity bookedBookingEntity;
 
   private LocalDate startDate;

@@ -2,6 +2,7 @@ package de.explore.grabby.booking.rest.booking;
 
 import de.explore.grabby.booking.model.booking.Booking;
 import de.explore.grabby.booking.repository.BookingRepository;
+import de.explore.grabby.booking.service.BookingService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -9,15 +10,19 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.List;
 
+// TODO: Add responses and document them
 @Path("/bookings")
 public class BookingResource {
 
+  public static final String OVERDUE_STATUS = "overdue";
   private final BookingRepository bookingRepository;
+  private final BookingService service;
   private final JsonWebToken jwt;
 
   @Inject
-  public BookingResource(BookingRepository bookingRepository, JsonWebToken jwt) {
+  public BookingResource(BookingRepository bookingRepository, BookingService service, JsonWebToken jwt) {
     this.bookingRepository = bookingRepository;
+    this.service = service;
     this.jwt = jwt;
   }
 
@@ -28,14 +33,11 @@ public class BookingResource {
   }
 
   @GET
-  public List<Booking> getAllBookings() {
+  public List<Booking> getAllBookings(@QueryParam("status") String status) {
+    if (status != null && status.equals(OVERDUE_STATUS)) {
+      return bookingRepository.listAllOverdueBookings(jwt.getSubject());
+    }
     return bookingRepository.listAllCurrentAndInFutureBookings(jwt.getSubject());
-  }
-
-  @Path("/overdue")
-  @GET
-  public List<Booking> getAllOverdueBookings() {
-    return bookingRepository.listAllOverdueBookings(jwt.getSubject());
   }
 
   @Path("/all")
@@ -66,6 +68,6 @@ public class BookingResource {
   @Path("/extend/{id}")
   @PUT
   public Boolean extendBookingById(@PathParam("id") long id, int requestedDays) {
-    return bookingRepository.extendById(id, requestedDays);
+    return service.extendById(id, requestedDays);
   }
 }

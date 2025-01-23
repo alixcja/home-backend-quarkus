@@ -26,10 +26,14 @@ public class BookingRepository implements PanacheRepository<Booking> {
   @Transactional
   public void cancelById(long id) {
     Booking bookingToCancel = findById(id);
-    if (bookingToCancel != null && bookingToCancel.getStartDate().isAfter(LocalDate.now())) {
+    if (bookingToCancel != null && isStartdateAfterEnddate(bookingToCancel)) {
       bookingToCancel.setIsCancelled(true);
       persist(bookingToCancel);
     }
+  }
+
+  private boolean isStartdateAfterEnddate(Booking bookingToCancel) {
+    return bookingToCancel.getStartDate().isAfter(LocalDate.now());
   }
 
   public void returnById(long id) {
@@ -40,28 +44,14 @@ public class BookingRepository implements PanacheRepository<Booking> {
     }
   }
 
-  // TODO: Move it in a bookingService class
   @Transactional
-  public Boolean extendById(long bookingId, long requestedDays) {
-    Booking requestedBooking = findById(bookingId);
-    BookingEntity entity = requestedBooking.getBookedBookingEntity();
-    if (requestedDays > 7) {
-      throw new IllegalArgumentException("Man darf nicht mehr als sieben Tage verlängern.");
-    }
-    LocalDate endDate = requestedBooking.getEndDate();
-    LocalDate requestedDate = endDate.plusDays(requestedDays);
-    List<Booking> bookingsWithRequestedEntity = findAllBookingsByEntityAndByStartDateAfterRequestedDate(requestedBooking.getBookingId(), entity, requestedDate, endDate);
-    if (!bookingsWithRequestedEntity.isEmpty()) {
-      // TODO - Create custom Excpetions
-      throw new RuntimeException("Die gewünschte Entität ist leider verbucht.");
-    } else {
-      requestedBooking.setEndDate(requestedDate);
-      persist(requestedBooking);
-      return true;
-    }
+  public boolean extendBooking(Booking requestedBooking, LocalDate requestedDate) {
+    requestedBooking.setEndDate(requestedDate);
+    persist(requestedBooking);
+    return true;
   }
 
-  private List<Booking> findAllBookingsByEntityAndByStartDateAfterRequestedDate(long id, BookingEntity entity, LocalDate requestedDate, LocalDate endDate) {
+  public List<Booking> findAllBookingsByEntityAndByStartDateAfterRequestedDate(long id, BookingEntity entity, LocalDate requestedDate, LocalDate endDate) {
     return find("bookingId != ?1 and bookedBookingEntity = ?2 and startDate <= ?3 and endDate >= ?4", id, entity, requestedDate, endDate)
             .list();
   }
