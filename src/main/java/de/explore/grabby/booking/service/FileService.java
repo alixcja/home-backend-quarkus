@@ -4,6 +4,8 @@ import de.explore.grabby.booking.rest.request.UploadForm;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -16,6 +18,8 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class FileService {
+  private static final Logger LOG = LoggerFactory.getLogger(FileService.class);
+
   @Inject
   S3Client s3;
 
@@ -23,6 +27,7 @@ public class FileService {
     ensureBucketExists(bucket);
     String fileName = UUID.randomUUID().toString();
     PutObjectRequest putObjectRequest = createPutObjectRequest(bucket, fileName);
+    LOG.info("Uploading file {} to bucket {}", bucket, fileName);
     s3.putObject(putObjectRequest, RequestBody
             .fromFile(uploadForm.file));
     return fileName;
@@ -38,6 +43,7 @@ public class FileService {
   private void ensureBucketExists(String bucket) {
     if (bucketDoesNotExists(bucket)) {
       CreateBucketRequest createBucketRequest = createCreateBucketRequest(bucket);
+      LOG.info("Creating new bucket {}", bucket);
       s3.createBucket(createBucketRequest);
     }
   }
