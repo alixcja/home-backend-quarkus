@@ -1,7 +1,6 @@
 package de.explore.grabby.booking.repository.entity;
 
 import de.explore.grabby.booking.model.entity.ConsoleAccessory;
-import de.explore.grabby.booking.model.entity.ConsoleAccessory;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -11,7 +10,7 @@ import java.util.Objects;
 @ApplicationScoped
 public class ConsoleAccessoryRepository implements PanacheRepository<ConsoleAccessory> {
   public void persistConsoleAccessory(ConsoleAccessory consoleAccessoryToPersist) {
-    if (Objects.isNull(consoleAccessoryToPersist)) {
+    if (!Objects.isNull(consoleAccessoryToPersist)) {
       persist(consoleAccessoryToPersist);
     }
   }

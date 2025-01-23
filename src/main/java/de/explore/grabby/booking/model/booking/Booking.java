@@ -9,97 +9,105 @@ import java.time.LocalDateTime;
 
 @Entity
 public class Booking implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOOKING_SEQ")
-    @SequenceGenerator(name = "BOOKING_SEQ", sequenceName = "BOOKING_TABLE_SEQ", allocationSize = 1)
-    @Column(name = "id")
-    private int bookingId;
-    @Column(name = "user_id")
-    private String userId;
-    @JoinColumn(name = "bookingEntity_id")
-    @ManyToOne
-    private BookingEntity bookedBookingEntity;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private LocalDate bookingDate;
-    private Boolean isCancelled;
-    private Boolean isReturned;
-    // field to count how often booking was extended
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOOKING_SEQ")
+  @SequenceGenerator(name = "BOOKING_SEQ", sequenceName = "BOOKING_TABLE_SEQ", allocationSize = 1)
 
-    public Booking() {
-    }
+  @Column(name = "id")
+  private int bookingId;
 
-    public Booking(String userId, BookingEntity bookedBookingEntity, LocalDate startDate, LocalDate endDate) {
-        this.userId = userId;
-        this.bookedBookingEntity = bookedBookingEntity;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.bookingDate = LocalDate.now();
-        this.isCancelled = false;
-        this.isReturned = false;
-    }
+  @Column(name = "user_id")
+  private String userId;
 
-    public int getBookingId() {
-        return bookingId;
-    }
+  @JoinColumn(name = "bookingEntity_id")
+  @ManyToOne
+  private BookingEntity bookedBookingEntity;
 
-    public void setBookingId(int bookingId) {
-        this.bookingId = bookingId;
-    }
+  private LocalDate startDate;
 
-    public String getUserId() {
-        return userId;
-    }
+  private LocalDate endDate;
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+  private LocalDate bookingDate;
 
-    public BookingEntity getBookedBookingEntity() {
-        return bookedBookingEntity;
-    }
+  private Boolean isCancelled;
 
-    public void setBookedBookingEntity(BookingEntity bookedBookingEntity) {
-        this.bookedBookingEntity = bookedBookingEntity;
-    }
+  private Boolean isReturned;
+  // field to count how often booking was extended
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
+  public Booking() {
+  }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
+  public Booking(String userId, BookingEntity bookedBookingEntity, LocalDate startDate, LocalDate endDate) {
+    this.userId = userId;
+    this.bookedBookingEntity = bookedBookingEntity;
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.bookingDate = LocalDate.now();
+    this.isCancelled = false;
+    this.isReturned = false;
+  }
 
-    public LocalDate getEndDate() {
-        return endDate;
-    }
+  public int getBookingId() {
+    return bookingId;
+  }
 
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
+  public void setBookingId(int bookingId) {
+    this.bookingId = bookingId;
+  }
 
-    public LocalDate getBookingDate() {
-        return bookingDate;
-    }
+  public String getUserId() {
+    return userId;
+  }
 
-    public void setBookingDate(LocalDate bookingDate) {
-        this.bookingDate = bookingDate;
-    }
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-    public Boolean getIsCancelled() {
-        return isCancelled;
-    }
+  public BookingEntity getBookedBookingEntity() {
+    return bookedBookingEntity;
+  }
 
-    public void setIsCancelled(Boolean isCancelled) {
-        this.isCancelled = isCancelled;
-    }
+  public void setBookedBookingEntity(BookingEntity bookedBookingEntity) {
+    this.bookedBookingEntity = bookedBookingEntity;
+  }
 
-    public Boolean getIsReturned() {
-        return isReturned;
-    }
+  public LocalDate getStartDate() {
+    return startDate;
+  }
 
-    public void setIsReturned(Boolean isReturned) {
-        this.isReturned = isReturned;
-    }
+  public void setStartDate(LocalDate startDate) {
+    this.startDate = startDate;
+  }
+
+  public LocalDate getEndDate() {
+    return endDate;
+  }
+
+  public void setEndDate(LocalDate endDate) {
+    this.endDate = endDate;
+  }
+
+  public LocalDate getBookingDate() {
+    return bookingDate;
+  }
+
+  public void setBookingDate(LocalDate bookingDate) {
+    this.bookingDate = bookingDate;
+  }
+
+  public Boolean getIsCancelled() {
+    return isCancelled;
+  }
+
+  public void setIsCancelled(Boolean isCancelled) {
+    this.isCancelled = isCancelled;
+  }
+
+  public Boolean getIsReturned() {
+    return isReturned;
+  }
+
+  public void setIsReturned(Boolean isReturned) {
+    this.isReturned = isReturned;
+  }
 }

@@ -11,7 +11,7 @@ import java.util.Objects;
 public class GameRepository implements PanacheRepository<Game> {
 
     public void persistGame(Game gameToPersist) {
-        if (Objects.isNull(gameToPersist)) {
+        if (!Objects.isNull(gameToPersist)) {
             persist(gameToPersist);
         }
     }

@@ -10,8 +10,8 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("/user")
 public class UserResource {
-  private UserRepository userRepository;
-  private JsonWebToken jwt;
+  private final UserRepository userRepository;
+  private final JsonWebToken jwt;
 
   @Inject
   public UserResource(UserRepository userRepository, JsonWebToken jwt) {

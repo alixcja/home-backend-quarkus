@@ -11,7 +11,7 @@ import java.util.Objects;
 @ApplicationScoped
 public class ConsoleRepository implements PanacheRepository<Console> {
     public void persistConsole(Console consoleToPersist) {
-        if (Objects.isNull(consoleToPersist)) {
+        if (!Objects.isNull(consoleToPersist)) {
             persist(consoleToPersist);
         }
     }
