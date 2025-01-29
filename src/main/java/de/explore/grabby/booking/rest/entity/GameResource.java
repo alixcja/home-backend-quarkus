@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
@@ -20,8 +21,12 @@ public class GameResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public void addGame(Game game) {
-        gameRepository.persistGame(game);
+    public Response addGame(Game game) {
+        boolean creationWasSuccessful = gameRepository.persistGame(game);
+        if (!creationWasSuccessful) {
+            throw new BadRequestException("Invalid input");
+        }
+        return Response.status(Response.Status.CREATED).build();
     }
 
     // TODO - Only Admins

@@ -13,16 +13,14 @@ public class Booking implements Serializable {
   @SequenceGenerator(name = "BOOKING_SEQ", sequenceName = "BOOKING_TABLE_SEQ", allocationSize = 1)
 
   @Column(name = "id")
-  // TODO: Rename to id
-  private int bookingId;
+  private int id;
 
   @Column(name = "user_id")
   private String userId;
 
   @JoinColumn(name = "bookingEntity_id")
   @ManyToOne
-  // TODO: Rename to bookingentity
-  private BookingEntity bookedBookingEntity;
+  private BookingEntity bookingEntity;
 
   private LocalDate startDate;
 
@@ -38,9 +36,9 @@ public class Booking implements Serializable {
   public Booking() {
   }
 
-  public Booking(String userId, BookingEntity bookedBookingEntity, LocalDate startDate, LocalDate endDate) {
+  public Booking(String userId, BookingEntity bookingEntity, LocalDate startDate, LocalDate endDate) {
     this.userId = userId;
-    this.bookedBookingEntity = bookedBookingEntity;
+    this.bookingEntity = bookingEntity;
     this.startDate = startDate;
     this.endDate = endDate;
     this.bookingDate = LocalDate.now();
@@ -48,12 +46,12 @@ public class Booking implements Serializable {
     this.isReturned = false;
   }
 
-  public int getBookingId() {
-    return bookingId;
+  public int getId() {
+    return id;
   }
 
-  public void setBookingId(int bookingId) {
-    this.bookingId = bookingId;
+  public void setId(int id) {
+    this.id = id;
   }
 
   public String getUserId() {
@@ -64,12 +62,12 @@ public class Booking implements Serializable {
     this.userId = userId;
   }
 
-  public BookingEntity getBookedBookingEntity() {
-    return bookedBookingEntity;
+  public BookingEntity getBookingEntity() {
+    return bookingEntity;
   }
 
-  public void setBookedBookingEntity(BookingEntity bookedBookingEntity) {
-    this.bookedBookingEntity = bookedBookingEntity;
+  public void setBookingEntity(BookingEntity bookingEntity) {
+    this.bookingEntity = bookingEntity;
   }
 
   public LocalDate getStartDate() {

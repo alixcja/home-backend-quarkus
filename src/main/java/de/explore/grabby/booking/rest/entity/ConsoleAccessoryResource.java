@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
@@ -20,8 +21,12 @@ public class ConsoleAccessoryResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public void addConsoleAccessory(ConsoleAccessory consoleAccessory) {
-        consoleAccessoryRepository.persistConsoleAccessory(consoleAccessory);
+    public Response addConsoleAccessory(ConsoleAccessory consoleAccessory) {
+        boolean creationWasSuccessful = consoleAccessoryRepository.persistConsoleAccessory(consoleAccessory);
+        if (!creationWasSuccessful) {
+            throw new BadRequestException("Invalid input");
+        }
+        return Response.status(Response.Status.CREATED).build();
     }
 
     // TODO - Only Admins

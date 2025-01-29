@@ -13,6 +13,7 @@ import io.quarkus.test.security.oidc.Claim;
 import io.quarkus.test.security.oidc.OidcSecurity;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,7 @@ class BookingResourceTests {
   private Booking booking1;
   private Booking booking2;
   private Game game;
+  private Booking booking7;
 
   @Inject
   public BookingResourceTests(BookingRepository bookingRepository, GameRepository gameRepository, ConsoleRepository consoleRepository) {
@@ -59,19 +61,20 @@ class BookingResourceTests {
 
     Booking booking5 = new Booking("abc123", console, LocalDate.now().plusDays(7), LocalDate.now().plusDays(10));
     Booking booking6 = new Booking("def456", console, LocalDate.now().plusDays(15), LocalDate.now().plusDays(20));
+    booking7 = new Booking("def456", console, LocalDate.now().minusDays(1), LocalDate.now().plusDays(3));
 
-    bookingRepository.persist(booking1, booking2, booking3, booking4, booking5, booking6);
+    bookingRepository.persist(booking1, booking2, booking3, booking4, booking5, booking6, booking7);
   }
 
   @Test
   void shouldReturnBookingById() {
     given()
             .when()
-            .pathParams("id", booking1.getBookingId())
+            .pathParams("id", booking1.getId())
             .get("/{id}")
             .then()
             .statusCode(200)
-            .body("bookedBookingEntity.id", is(booking1.getBookedBookingEntity().getId()));
+            .body("bookingEntity.id", is(3));
   }
 
   @Test
@@ -84,7 +87,7 @@ class BookingResourceTests {
   void shouldReturnAllBookings() {
     given()
             .when()
-            .get("/all")
+            .get()
             .then()
             .statusCode(200)
             .body("size()", is(4));
@@ -100,7 +103,8 @@ class BookingResourceTests {
   void shouldReturnOverdueBooking() {
     given()
             .when()
-            .get("/overdue")
+            .queryParam("status", "overdue")
+            .get()
             .then()
             .body("size()", is(1))
             .body("[0].isReturned", is(false));
@@ -116,6 +120,7 @@ class BookingResourceTests {
   void shouldReturnCurrentAndInFutureBookings() {
     given()
             .when()
+            .queryParam("status", "upcoming")
             .get()
             .then()
             .statusCode(200)
@@ -134,18 +139,18 @@ class BookingResourceTests {
 
     given()
             .when()
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .body(List.of(newBooking))
-            .post("/new")
+            .post()
             .then()
-            .statusCode(204);
+            .statusCode(201);
   }
 
   @Test
   void shouldCancelBooking() {
     given()
             .when()
-            .pathParams("id", booking2.getBookingId())
+            .pathParams("id", booking2.getId())
             .put("/cancel/{id}")
             .then()
             .statusCode(204);
@@ -155,7 +160,7 @@ class BookingResourceTests {
   void shouldReturnBooking() {
     given()
             .when()
-            .pathParams("id", booking1.getBookingId())
+            .pathParams("id", booking7.getId())
             .put("/return/{id}")
             .then()
             .statusCode(204);
@@ -165,12 +170,11 @@ class BookingResourceTests {
   void shouldExtendBooking() {
     given()
             .when()
-            .pathParams("id", booking1.getBookingId())
+            .pathParams("id", booking1.getId())
             .body(2)
             .put("/extend/{id}")
             .then()
-            .statusCode(200)
-            .body(is("true"));
+            .statusCode(204);
   }
 
   @Test
@@ -178,11 +182,11 @@ class BookingResourceTests {
     createAnotherBooking();
     given()
             .when()
-            .pathParams("id", booking1.getBookingId())
+            .pathParams("id", booking1.getId())
             .body(2)
             .put("/extend/{id}")
             .then()
-            .statusCode(500);
+            .statusCode(400);
   }
 
   @Transactional
@@ -195,11 +199,11 @@ class BookingResourceTests {
   void shouldNotExtendBookingDueToMuchDays() {
     given()
             .when()
-            .pathParams("id", booking1.getBookingId())
+            .pathParams("id", booking1.getId())
             .body(9)
             .put("/extend/{id}")
             .then()
-            .statusCode(500);
+            .statusCode(400);
   }
 
   @AfterEach

@@ -24,35 +24,44 @@ public class BookingRepository implements PanacheRepository<Booking> {
   }
 
   @Transactional
-  public void cancelById(long id) {
+  public boolean cancelById(long id) {
     Booking bookingToCancel = findById(id);
-    if (bookingToCancel != null && isStartdateAfterEnddate(bookingToCancel)) {
+    if (isStartdateAfterNow(bookingToCancel)) {
       bookingToCancel.setIsCancelled(true);
       persist(bookingToCancel);
+      return true;
     }
+    return false;
   }
 
-  private boolean isStartdateAfterEnddate(Booking bookingToCancel) {
+  private boolean isStartdateAfterNow(Booking bookingToCancel) {
     return bookingToCancel.getStartDate().isAfter(LocalDate.now());
   }
 
-  public void returnById(long id) {
+  public boolean returnById(long id) {
     Booking bookingToReturn = findById(id);
-    if (bookingToReturn != null) {
+    if (bookingIsActive(bookingToReturn)) {
       bookingToReturn.setIsReturned(true);
       persist(bookingToReturn);
+      return true;
     }
+    return false;
+  }
+
+  private boolean bookingIsActive(Booking bookingToReturn) {
+    return bookingToReturn.getStartDate().isBefore(LocalDate.now()) &&
+            bookingToReturn.getEndDate().isAfter(LocalDate.now());
   }
 
   @Transactional
-  public boolean extendBooking(Booking requestedBooking, LocalDate requestedDate) {
+  public void extendBooking(long id, LocalDate requestedDate) {
+    Booking requestedBooking = findById(id);
     requestedBooking.setEndDate(requestedDate);
     persist(requestedBooking);
-    return true;
   }
 
   public List<Booking> findAllBookingsByEntityAndByStartDateAfterRequestedDate(long id, BookingEntity entity, LocalDate requestedDate, LocalDate endDate) {
-    return find("bookingId != ?1 and bookedBookingEntity = ?2 and startDate <= ?3 and endDate >= ?4", id, entity, requestedDate, endDate)
+    return find("id != ?1 and bookingEntity = ?2 and startDate <= ?3 and endDate >= ?4", id, entity, requestedDate, endDate)
             .list();
   }
 

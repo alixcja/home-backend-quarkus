@@ -15,27 +15,21 @@ public class BookingService {
   @Inject
   BookingRepository repository;
 
-  public Boolean extendById(long bookingId, long requestedDays) {
+  public boolean extendById(long bookingId, long requestedDays) {
     Booking requestedBooking = repository.findById(bookingId);
-    BookingEntity entity = requestedBooking.getBookedBookingEntity();
-    validateRequestedDays(requestedDays);
+    BookingEntity entity = requestedBooking.getBookingEntity();
     LocalDate requestedEndDate = requestedBooking.getEndDate().plusDays(requestedDays);
-    ensureEntityIsAvailable(requestedBooking.getBookingId(), entity, requestedBooking.getEndDate(), requestedEndDate);
-    return repository.extendBooking(requestedBooking, requestedEndDate);
+    boolean isEntityAvailable = ensureEntityIsAvailable(requestedBooking.getId(), entity, requestedBooking.getEndDate(), requestedEndDate);
+    if (!isEntityAvailable) {
+      return false;
+    }
+    repository.extendBooking(bookingId, requestedEndDate);
+    return true;
   }
 
-  private void ensureEntityIsAvailable(long bookingId, BookingEntity entity, LocalDate endDate, LocalDate requestedEndDate) {
+  private boolean ensureEntityIsAvailable(long bookingId, BookingEntity entity, LocalDate endDate, LocalDate requestedEndDate) {
     List<Booking> bookingsWithRequestedEntity = repository.findAllBookingsByEntityAndByStartDateAfterRequestedDate(bookingId, entity, requestedEndDate, endDate);
 
-    if (!bookingsWithRequestedEntity.isEmpty()) {
-      // TODO - Create custom Excpetions
-      throw new RuntimeException("Die gewünschte Entität ist leider verbucht.");
-    }
-  }
-
-  private void validateRequestedDays(long requestedDays) {
-    if (requestedDays > MAX_EXTENDING_DAY) {
-      throw new IllegalArgumentException("Man darf nicht mehr als sieben Tage verlängern.");
-    }
+    return bookingsWithRequestedEntity.isEmpty();
   }
 }

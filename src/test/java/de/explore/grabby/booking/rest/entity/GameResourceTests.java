@@ -62,7 +62,7 @@ class GameResourceTests {
             .body(newGame)
             .post("/create")
             .then()
-            .statusCode(204);
+            .statusCode(201);
   }
 
   @Test
@@ -72,7 +72,7 @@ class GameResourceTests {
             .contentType("application/json")
             .post("/create")
             .then()
-            .statusCode(500);
+            .statusCode(400);
   }
 
   @Test

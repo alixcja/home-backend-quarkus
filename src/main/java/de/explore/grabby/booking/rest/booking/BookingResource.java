@@ -6,15 +6,21 @@ import de.explore.grabby.booking.service.BookingService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
-// TODO: Add responses and document them
+import static jakarta.ws.rs.core.Response.Status.*;
+
 @Path("/bookings")
 public class BookingResource {
 
-  public static final String OVERDUE_STATUS = "overdue";
+  private static final String OVERDUE_STATUS = "overdue";
+  private static final String UPCOMING_STATUS = "upcoming";
+  private static final int MAX_REQUEST_DAYS = 7;
   private final BookingRepository bookingRepository;
   private final BookingService service;
   private final JsonWebToken jwt;
@@ -28,46 +34,86 @@ public class BookingResource {
 
   @Path("/{id}")
   @GET
-  public Booking getBookingByID(@PathParam("id") long id) {
-    return bookingRepository.findById(id);
+  @Produces(MediaType.APPLICATION_JSON)
+  @APIResponse(responseCode = "200", description = "Got successfully booking by id")
+  @APIResponse(responseCode = "404", description = "No booking found for provided id")
+  public Response getBookingByID(@PathParam("id") long id) {
+    Booking byId = bookingRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
+    return Response.ok(byId).build();
   }
 
+
   @GET
-  public List<Booking> getAllBookings(@QueryParam("status") String status) {
+  @Produces(MediaType.APPLICATION_JSON)
+  @APIResponse(responseCode = "200", description = "Got successfully bookings")
+  public Response getBookings(@QueryParam("status") String status) {
+    List<Booking> bookings = new ArrayList<>();
     if (status != null && status.equals(OVERDUE_STATUS)) {
-      return bookingRepository.listAllOverdueBookings(jwt.getSubject());
+      bookings = bookingRepository.listAllOverdueBookings(jwt.getSubject());
+    } else if (status != null && status.equals(UPCOMING_STATUS)) {
+      bookings = bookingRepository.listAllCurrentAndInFutureBookings(jwt.getSubject());
+    } else {
+      bookings = bookingRepository.listAllBookings(jwt.getSubject());
     }
-    return bookingRepository.listAllCurrentAndInFutureBookings(jwt.getSubject());
+    return Response.ok(bookings).build();
   }
 
-  @Path("/all")
-  @GET
-  public List<Booking> getAllCurrentAndInFutureBookings() {
-    return bookingRepository.listAllBookings(jwt.getSubject());
-  }
-
-  @Path("/new")
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  public void createBookings(List<Booking> newBookings) {
+  @APIResponse(responseCode = "201", description = "Successfully booked entities")
+  @APIResponse(responseCode = "400", description = "Invalid input")
+  public Response createBookings(List<Booking> newBookings) {
     bookingRepository.create(newBookings, jwt.getSubject());
+    return Response.status(CREATED).build();
   }
 
   @Path("/cancel/{id}")
   @PUT
-  public void cancelBookingById(@PathParam("id") long id) {
-    bookingRepository.cancelById(id);
+  @APIResponse(responseCode = "204", description = "Successfully cancelled booking")
+  @APIResponse(responseCode = "400", description = "Too late to cancel booking")
+  @APIResponse(responseCode = "404", description = "No booking found for provided id")
+  public Response cancelBookingById(@PathParam("id") long id) {
+    ensureBookingExists(id);
+    boolean successfullyCanceled = bookingRepository.cancelById(id);
+    if (!successfullyCanceled) {
+      throw new BadRequestException("Could not cancel booking with id: " + id);
+    }
+    return Response.status(NO_CONTENT).build();
   }
 
   @Path("/return/{id}")
   @PUT
-  public void returnBookingById(@PathParam("id") long id) {
-    bookingRepository.returnById(id);
+  @APIResponse(responseCode = "204", description = "Successfully cancelled booking")
+  @APIResponse(responseCode = "400", description = "Booking is not active")
+  @APIResponse(responseCode = "404", description = "No booking found for provided id")
+  public Response returnBookingById(@PathParam("id") long id) {
+    ensureBookingExists(id);
+    boolean successfullyReturned = bookingRepository.returnById(id);
+    if (!successfullyReturned) {
+      throw new BadRequestException("Booking is not active");
+    }
+    return Response.status(NO_CONTENT).build();
   }
 
   @Path("/extend/{id}")
   @PUT
-  public Boolean extendBookingById(@PathParam("id") long id, int requestedDays) {
-    return service.extendById(id, requestedDays);
+  @APIResponse(responseCode = "204", description = "Successfully cancelled booking")
+  @APIResponse(responseCode = "400", description = "Invalid input")
+  @APIResponse(responseCode = "404", description = "No booking found for provided id")
+  public Response extendBookingById(@PathParam("id") long id, int requestedDays) {
+    ensureBookingExists(id);
+    if (requestedDays > MAX_REQUEST_DAYS) {
+      throw new BadRequestException("Booking cannot be extended by more then 7 days");
+    }
+    boolean successfullyExtended = service.extendById(id, requestedDays);
+
+    if (!successfullyExtended) {
+      throw new BadRequestException("Booking was already booked");
+    }
+    return Response.status(NO_CONTENT).build();
+  }
+
+  private void ensureBookingExists(Long id) {
+    bookingRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 }

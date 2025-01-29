@@ -62,7 +62,7 @@ class ConsoleAccessoryResourceTests {
             .body(newConsoleAccessory)
             .post("/create")
             .then()
-            .statusCode(204);
+            .statusCode(201);
   }
 
   @Test
@@ -72,7 +72,7 @@ class ConsoleAccessoryResourceTests {
             .contentType("application/json")
             .post("/create")
             .then()
-            .statusCode(500);
+            .statusCode(400);
   }
 
   @Test

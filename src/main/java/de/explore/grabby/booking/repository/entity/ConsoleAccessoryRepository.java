@@ -9,10 +9,12 @@ import java.util.Objects;
 
 @ApplicationScoped
 public class ConsoleAccessoryRepository implements PanacheRepository<ConsoleAccessory> {
-  public void persistConsoleAccessory(ConsoleAccessory consoleAccessoryToPersist) {
+  public boolean persistConsoleAccessory(ConsoleAccessory consoleAccessoryToPersist) {
     if (!Objects.isNull(consoleAccessoryToPersist)) {
       persist(consoleAccessoryToPersist);
+      return true;
     }
+    return false;
   }
 
   public List<ConsoleAccessory> getAllConsoleAccessories() {
