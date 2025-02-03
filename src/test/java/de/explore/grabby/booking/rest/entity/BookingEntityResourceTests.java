@@ -48,8 +48,87 @@ public class BookingEntityResourceTests {
   void setUp() {
     game1 = new Game("Let's dance!", "This is a fun dance game", "Nintendo Switch");
     game2 = new Game("Mario Kart 8 Deluxe", "You will hate each other", "Nintendo Switch");
+    Game game3 = new Game("Monopoly", "When playing this game, you will hate your friends and family", "Nintendo Switch");
+    game3.setIsArchived(true);
 
-    repository.persist(game1, game2);
+    repository.persist(game1, game2, game3);
+  }
+
+  @Test
+  void shouldGetEntityById() {
+    given()
+            .when()
+            .pathParams("id", game1.getId())
+            .get("/{id}")
+            .then()
+            .statusCode(SC_OK)
+            .body("name", is(game1.getName()))
+            .body("description", is(game1.getDescription()))
+            .body("type", is(game1.getType()))
+            .body("consoleType", is(game1.getConsoleType()))
+            .body("isArchived", is(false))
+            .body("addedOn", notNullValue())
+            .body("image", nullValue());
+  }
+
+  @Test
+  void shouldNotGetEntityById() {
+    given()
+            .when()
+            .pathParams("id", "non-existing-id")
+            .get("/{id}")
+            .then()
+            .statusCode(SC_NOT_FOUND);
+  }
+
+  @Test
+  void shouldGetAllEntities() {
+    given()
+            .when()
+            .get()
+            .then()
+            .statusCode(SC_OK)
+            .body("size()", is(3));
+  }
+
+  @Test
+  void shouldGetAllNotArchivedEntities() {
+    given()
+            .when()
+            .get("/not-archived")
+            .then()
+            .statusCode(SC_OK)
+            .body("size()", is(2));
+  }
+
+  @Test
+  void shouldGetAllArchivedEntities() {
+    given()
+            .when()
+            .get("/archived")
+            .then()
+            .statusCode(SC_OK)
+            .body("size()", is(1));
+  }
+
+  @Test
+  void shouldArchiveEntityById() {
+    given()
+            .when()
+            .pathParams("id", game1.getId())
+            .put("/{id}/archive")
+            .then()
+            .statusCode(SC_NO_CONTENT);
+  }
+
+  @Test
+  void shouldNotArchiveEntityById() {
+    given()
+            .when()
+            .pathParams("id", "no-existing-id")
+            .put("/{id}/archive")
+            .then()
+            .statusCode(SC_NOT_FOUND);
   }
 
   @Test
@@ -67,11 +146,10 @@ public class BookingEntityResourceTests {
             .then()
             .statusCode(SC_NO_CONTENT);
 
-    BookingEntity newGame = repository.findById(Long.valueOf(game1.getId()));
+    BookingEntity newGame = repository.findById(game1.getId());
     assertNotNull(newGame.getImage());
   }
 
-  // validate if image is there
   @Test
   void shouldNotUploadImageForGame() {
     given()
@@ -88,7 +166,7 @@ public class BookingEntityResourceTests {
     File image = File.createTempFile("tmp", ".png");
     UploadForm uploadForm = new UploadForm();
     uploadForm.file = image;
-    service.uploadImageForEntity((long) game1.getId(), uploadForm);
+    service.uploadImageForEntity(game1.getId(), uploadForm);
     assertNotNull(repository.findById(game1.getId()).getImage());
 
     given().when().

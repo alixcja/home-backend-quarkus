@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
@@ -28,14 +29,30 @@ public class BookingEntityResource {
 
   @Path("/{id}")
   @GET
+  @APIResponse(responseCode = "200", description = "Found entity by id")
+  @APIResponse(responseCode = "404", description = "No entity found for provided id")
   public BookingEntity findById(@PathParam("id") long id) {
-    return bookingEntityRepository.findById(id);
+    return bookingEntityRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
-  // TODO - Split this into all entities, archived entities and not archvied entities
   @GET
+  @APIResponse(responseCode = "200", description = "Got all entities")
   public List<BookingEntity> getAllEntities() {
     return bookingEntityRepository.listAll();
+  }
+
+  @Path("/archived")
+  @GET
+  @APIResponse(responseCode = "200", description = "Got all archived entities")
+  public List<BookingEntity> getAllArchivedEntities() {
+    return bookingEntityRepository.listAllArchived();
+  }
+
+  @Path("/not-archived")
+  @GET
+  @APIResponse(responseCode = "200", description = "Got all not archived entities")
+  public List<BookingEntity> getAllNotArchivedEntities() {
+    return bookingEntityRepository.listAllNotArchived();
   }
 
   // TODO - Only admins should be able to use this endpoint
@@ -45,18 +62,25 @@ public class BookingEntityResource {
     createTestData();
   }
 
-  // TODO - Do / even test it?
   @Path("/{id}/archive")
   @PUT
+  @APIResponse(responseCode = "200", description = "Archived entity by id")
+  @APIResponse(responseCode = "404", description = "No entity found for provided id")
   @Produces(MediaType.APPLICATION_JSON)
-  public void archiveEntity(@PathParam("id") long id) {
+  public Response archiveEntity(@PathParam("id") long id) {
+    ensureEntityExists(id);
     bookingEntityRepository.archiveEntityById(id);
+    return Response.noContent().build();
   }
 
   @Path("/{id}/image")
   @GET
+  @APIResponse(responseCode = "200", description = "Got image for entity with provided id")
+  @APIResponse(responseCode = "204", description = "No image found for entity with provided id")
+  @APIResponse(responseCode = "404", description = "No entity found for provided id")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   public Response getImageForEntity(@PathParam("id") long id) {
+    ensureEntityExists(id);
     ResponseInputStream<GetObjectResponse> response = bookingEntityService.getImageForEntity(id);
     if (response == null) {
       return Response.noContent().build();
@@ -66,12 +90,20 @@ public class BookingEntityResource {
 
   @Path("/{id}/image")
   @PUT
+  @APIResponse(responseCode = "200", description = "Uploaded image for entity with provided id")
+  @APIResponse(responseCode = "400", description = "File is empty")
+  @APIResponse(responseCode = "404", description = "No entity found for provided id")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   public void uploadImageForEntity(@PathParam("id") long id, UploadForm uploadForm) {
+    ensureEntityExists(id);
     if (uploadForm.file == null) {
       throw new BadRequestException("File is empty");
     }
     bookingEntityService.uploadImageForEntity(id, uploadForm);
+  }
+
+  private void ensureEntityExists(Long id) {
+    bookingEntityRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
 
