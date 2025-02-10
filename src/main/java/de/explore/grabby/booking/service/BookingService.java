@@ -1,6 +1,6 @@
 package de.explore.grabby.booking.service;
 
-import de.explore.grabby.booking.model.booking.Booking;
+import de.explore.grabby.booking.model.Booking;
 import de.explore.grabby.booking.model.entity.BookingEntity;
 import de.explore.grabby.booking.repository.BookingRepository;
 import jakarta.enterprise.context.ApplicationScoped;

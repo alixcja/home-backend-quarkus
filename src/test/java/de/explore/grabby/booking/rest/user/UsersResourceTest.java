@@ -2,6 +2,7 @@ package de.explore.grabby.booking.rest.user;
 
 import de.explore.grabby.booking.model.Users;
 import de.explore.grabby.booking.repository.UserRepository;
+import de.explore.grabby.booking.rest.UserResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;

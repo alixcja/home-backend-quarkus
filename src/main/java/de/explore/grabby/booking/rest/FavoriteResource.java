@@ -1,4 +1,4 @@
-package de.explore.grabby.booking.rest.favorite;
+package de.explore.grabby.booking.rest;
 
 import de.explore.grabby.booking.model.Favorite;
 import de.explore.grabby.booking.repository.FavoriteRepository;

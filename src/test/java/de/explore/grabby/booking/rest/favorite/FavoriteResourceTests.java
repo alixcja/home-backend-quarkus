@@ -4,6 +4,7 @@ import de.explore.grabby.booking.model.Favorite;
 import de.explore.grabby.booking.model.entity.Game;
 import de.explore.grabby.booking.repository.FavoriteRepository;
 import de.explore.grabby.booking.repository.entity.GameRepository;
+import de.explore.grabby.booking.rest.FavoriteResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;

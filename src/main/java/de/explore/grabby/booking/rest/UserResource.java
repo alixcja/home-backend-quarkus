@@ -1,4 +1,4 @@
-package de.explore.grabby.booking.rest.user;
+package de.explore.grabby.booking.rest;
 
 import de.explore.grabby.booking.model.Users;
 import de.explore.grabby.booking.repository.UserRepository;

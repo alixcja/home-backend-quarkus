@@ -1,6 +1,6 @@
-package de.explore.grabby.booking.rest.booking;
+package de.explore.grabby.booking.rest;
 
-import de.explore.grabby.booking.model.booking.Booking;
+import de.explore.grabby.booking.model.Booking;
 import de.explore.grabby.booking.repository.BookingRepository;
 import de.explore.grabby.booking.service.BookingService;
 import jakarta.inject.Inject;

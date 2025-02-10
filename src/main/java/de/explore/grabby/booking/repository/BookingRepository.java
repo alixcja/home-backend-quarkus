@@ -1,6 +1,6 @@
 package de.explore.grabby.booking.repository;
 
-import de.explore.grabby.booking.model.booking.Booking;
+import de.explore.grabby.booking.model.Booking;
 import de.explore.grabby.booking.model.entity.BookingEntity;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;

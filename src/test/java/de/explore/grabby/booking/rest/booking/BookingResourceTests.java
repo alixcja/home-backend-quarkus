@@ -1,11 +1,12 @@
 package de.explore.grabby.booking.rest.booking;
 
-import de.explore.grabby.booking.model.booking.Booking;
+import de.explore.grabby.booking.model.Booking;
 import de.explore.grabby.booking.model.entity.Console;
 import de.explore.grabby.booking.model.entity.Game;
 import de.explore.grabby.booking.repository.BookingRepository;
 import de.explore.grabby.booking.repository.entity.ConsoleRepository;
 import de.explore.grabby.booking.repository.entity.GameRepository;
+import de.explore.grabby.booking.rest.BookingResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
