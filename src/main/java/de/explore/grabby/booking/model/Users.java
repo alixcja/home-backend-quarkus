@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 @Entity
 public class Users {
 
-  // TODO: Change it so subject will be unique and used as id
   @Id
   private String identifier;
 
