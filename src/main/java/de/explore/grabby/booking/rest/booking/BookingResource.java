@@ -42,7 +42,6 @@ public class BookingResource {
     return Response.ok(byId).build();
   }
 
-
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @APIResponse(responseCode = "200", description = "Got successfully bookings")

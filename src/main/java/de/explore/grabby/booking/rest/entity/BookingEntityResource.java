@@ -7,6 +7,7 @@ import de.explore.grabby.booking.model.entity.Game;
 import de.explore.grabby.booking.repository.entity.BookingEntityRepository;
 import de.explore.grabby.booking.rest.request.UploadForm;
 import de.explore.grabby.booking.service.BookingEntityService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -41,6 +42,7 @@ public class BookingEntityResource {
     return bookingEntityRepository.listAll();
   }
 
+  @RolesAllowed("${admin-role}")
   @Path("/archived")
   @GET
   @APIResponse(responseCode = "200", description = "Got all archived entities")
@@ -56,12 +58,14 @@ public class BookingEntityResource {
   }
 
   // TODO - Only admins should be able to use this endpoint
+  @RolesAllowed("${admin-role}")
   @POST
   @Path("/testdata")
   public void createTestBookingEntities() {
     createTestData();
   }
 
+  @RolesAllowed("${admin-role}")
   @Path("/{id}/archive")
   @PUT
   @APIResponse(responseCode = "200", description = "Archived entity by id")
@@ -88,6 +92,7 @@ public class BookingEntityResource {
     return Response.ok(response).build();
   }
 
+  @RolesAllowed("${admin-role}")
   @Path("/{id}/image")
   @PUT
   @APIResponse(responseCode = "200", description = "Uploaded image for entity with provided id")
@@ -105,9 +110,6 @@ public class BookingEntityResource {
   private void ensureEntityExists(Long id) {
     bookingEntityRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
-
-
-  // TODO - Admins should be able to persist their entities data
 
   @Transactional
   public void createTestData() {

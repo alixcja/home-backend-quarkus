@@ -2,6 +2,7 @@ package de.explore.grabby.booking.rest.entity;
 
 import de.explore.grabby.booking.model.entity.ConsoleAccessory;
 import de.explore.grabby.booking.repository.entity.ConsoleAccessoryRepository;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -16,7 +17,7 @@ public class ConsoleAccessoryResource {
     @Inject
     ConsoleAccessoryRepository consoleAccessoryRepository;
 
-    // TODO - Only Admins
+    @RolesAllowed("${admin-role}")
     @Path("/create")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -29,7 +30,7 @@ public class ConsoleAccessoryResource {
         return Response.status(Response.Status.CREATED).build();
     }
 
-    // TODO - Only Admins
+    @RolesAllowed("${admin-role}")
     @Path("/update/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)

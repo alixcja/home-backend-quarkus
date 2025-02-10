@@ -169,8 +169,9 @@ public class BookingEntityResourceTests {
     service.uploadImageForEntity(game1.getId(), uploadForm);
     assertNotNull(repository.findById(game1.getId()).getImage());
 
-    given().when().
-            pathParams("id", game1.getId())
+    given()
+            .when()
+            .pathParams("id", game1.getId())
             .get("/{id}/image")
             .then()
             .statusCode(SC_OK)
