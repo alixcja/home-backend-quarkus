@@ -33,11 +33,11 @@ class UsersResourceTest {
   @Transactional
   void setUp() {
     users1 = new Users();
-    users1.setId("abc123");
+    users1.setIdentifier("abc123");
     users1.setFirstName("Peter");
     users1.setLastName("Lustig");
     users2 = new Users();
-    users2.setId("def456");
+    users2.setIdentifier("def456");
     users2.setFirstName("Hans");
     users2.setLastName("Müller");
 
@@ -60,7 +60,7 @@ class UsersResourceTest {
             .get("/me")
             .then()
             .statusCode(200)
-            .body("id", is(users1.getId()));
+            .body("identifier", is(users1.getIdentifier()));
   }
 
   @Test
@@ -78,7 +78,7 @@ class UsersResourceTest {
             .get("/me")
             .then()
             .statusCode(200)
-            .body("id", is("ghi789"));
+            .body("identifier", is("ghi789"));
   }
 
   @Test
@@ -86,11 +86,11 @@ class UsersResourceTest {
   void shouldReturnAUserById() {
     given()
             .when()
-            .pathParams("id", users2.getId())
-            .get("/{id}")
+            .pathParams("identifier", users2.getIdentifier())
+            .get("/{identifier}")
             .then()
             .statusCode(200)
-            .body("id", is(users2.getId()))
+            .body("identifier", is(users2.getIdentifier()))
             .body("firstName", is(users2.getFirstName()))
             .body("lastName", is(users2.getLastName()));
   }
@@ -100,8 +100,8 @@ class UsersResourceTest {
   void shouldReturn404() {
     given()
             .when()
-            .pathParams("id", "non-existing-id")
-            .get("/{id}")
+            .pathParams("identifier", "non-existing-identifier")
+            .get("/{identifier}")
             .then()
             .statusCode(404);
   }

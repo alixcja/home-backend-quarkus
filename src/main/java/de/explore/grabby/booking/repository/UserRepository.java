@@ -12,8 +12,8 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class UserRepository implements PanacheRepository<Users> {
-  public Users getUserById(String id) {
-    return getUserByIdIfExists(id).orElseThrow(NotFoundException::new);
+  public Users getUserByIdentifier(String identifier) {
+    return getUserByIdentifierIfExists(identifier).orElseThrow(NotFoundException::new);
   }
 
   @Transactional
@@ -23,11 +23,11 @@ public class UserRepository implements PanacheRepository<Users> {
     return users;
   }
 
-  private Optional<Users> getUserByIdIfExists(String id) {
-    return find("id", id).singleResultOptional();
+  private Optional<Users> getUserByIdentifierIfExists(String identifier) {
+    return find("id", identifier).singleResultOptional();
   }
 
   public Users getMyUser(JsonWebToken jwt) {
-    return getUserByIdIfExists(jwt.getSubject()).orElseGet(() -> createUser(jwt));
+    return getUserByIdentifierIfExists(jwt.getSubject()).orElseGet(() -> createUser(jwt));
   }
 }

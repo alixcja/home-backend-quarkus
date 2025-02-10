@@ -26,8 +26,8 @@ public class UserResource {
   }
 
   @GET
-  @Path("/{id}")
-  public Users getUserById(@PathParam("id") String id) {
-    return userRepository.getUserById(id);
+  @Path("/{identifier}")
+  public Users getUserById(@PathParam("identifier") String identifier) {
+    return userRepository.getUserByIdentifier(identifier);
   }
 }

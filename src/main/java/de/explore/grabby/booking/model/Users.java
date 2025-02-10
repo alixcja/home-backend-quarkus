@@ -7,7 +7,7 @@ public class Users {
 
   // TODO: Change it so subject will be unique and used as id
   @Id
-  private String id;
+  private String identifier;
 
   @Column(name = "last_name")
   private String lastName;
@@ -18,18 +18,18 @@ public class Users {
   public Users() {
   }
 
-  public Users(String id, String lastName, String firstName) {
-    this.id = id;
+  public Users(String identifier, String lastName, String firstName) {
+    this.identifier = identifier;
     this.lastName = lastName;
     this.firstName = firstName;
   }
 
-  public String getId() {
-    return id;
+  public String getIdentifier() {
+    return identifier;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
   }
 
   public String getLastName() {
