@@ -2,6 +2,9 @@ package de.explore.grabby.booking.model;
 
 import de.explore.grabby.booking.model.entity.BookingEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -11,27 +14,30 @@ public class Booking implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOOKING_SEQ")
   @SequenceGenerator(name = "BOOKING_SEQ", sequenceName = "BOOKING_TABLE_SEQ", allocationSize = 1)
-
   @Column(name = "id")
   private int id;
 
+  @NotBlank(message = "User must be set")
   @Column(name = "user_id")
   private String userId;
 
+  @NotNull(message = "Entity must be set")
   @JoinColumn(name = "bookingEntity_id")
   @ManyToOne
   private BookingEntity bookingEntity;
 
+  @NotNull(message = "Start date must be set")
   private LocalDate startDate;
 
+  @NotNull(message = "End date must be set")
   private LocalDate endDate;
 
+  @CreationTimestamp
   private LocalDate bookingDate;
 
   private Boolean isCancelled;
 
   private Boolean isReturned;
-  // field to count how often booking was extended
 
   public Booking() {
   }
@@ -41,7 +47,6 @@ public class Booking implements Serializable {
     this.bookingEntity = bookingEntity;
     this.startDate = startDate;
     this.endDate = endDate;
-    this.bookingDate = LocalDate.now();
     this.isCancelled = false;
     this.isReturned = false;
   }
@@ -66,10 +71,6 @@ public class Booking implements Serializable {
     return bookingEntity;
   }
 
-  public void setBookingEntity(BookingEntity bookingEntity) {
-    this.bookingEntity = bookingEntity;
-  }
-
   public LocalDate getStartDate() {
     return startDate;
   }
@@ -84,10 +85,6 @@ public class Booking implements Serializable {
 
   public void setEndDate(LocalDate endDate) {
     this.endDate = endDate;
-  }
-
-  public LocalDate getBookingDate() {
-    return bookingDate;
   }
 
   public void setBookingDate(LocalDate bookingDate) {

@@ -24,33 +24,16 @@ public class BookingRepository implements PanacheRepository<Booking> {
   }
 
   @Transactional
-  public boolean cancelById(long id) {
+  public void cancelById(long id) {
     Booking bookingToCancel = findById(id);
-    if (isStartdateAfterNow(bookingToCancel)) {
-      bookingToCancel.setIsCancelled(true);
-      persist(bookingToCancel);
-      return true;
-    }
-    return false;
+    bookingToCancel.setIsCancelled(true);
+    persist(bookingToCancel);
   }
 
-  private boolean isStartdateAfterNow(Booking bookingToCancel) {
-    return bookingToCancel.getStartDate().isAfter(LocalDate.now());
-  }
-
-  public boolean returnById(long id) {
+  public void returnById(long id) {
     Booking bookingToReturn = findById(id);
-    if (bookingIsActive(bookingToReturn)) {
-      bookingToReturn.setIsReturned(true);
-      persist(bookingToReturn);
-      return true;
-    }
-    return false;
-  }
-
-  private boolean bookingIsActive(Booking bookingToReturn) {
-    return bookingToReturn.getStartDate().isBefore(LocalDate.now()) &&
-            bookingToReturn.getEndDate().isAfter(LocalDate.now());
+    bookingToReturn.setIsReturned(true);
+    persist(bookingToReturn);
   }
 
   @Transactional

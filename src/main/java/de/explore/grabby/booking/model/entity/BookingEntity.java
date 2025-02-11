@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import de.explore.grabby.booking.model.entity.embedded.Image;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -26,16 +28,19 @@ public abstract class BookingEntity implements Serializable {
     @Column(name = "id")
     private int id;
 
+    @NotBlank(message = "Name of entity may not be blank")
     private String name;
 
     private String description;
 
+    @NotBlank(message = "Type of entity may not be blank")
     @Column(insertable = false, updatable = false)
     private String type;
 
     private Boolean isArchived = false;
 
-    private LocalDate addedOn = LocalDate.now();
+    @CreationTimestamp
+    private LocalDate addedOn;
 
     @Embedded
     private Image image;
@@ -48,7 +53,6 @@ public abstract class BookingEntity implements Serializable {
         this.description = description;
         this.type = type;
         this.isArchived = false;
-        this.addedOn = LocalDate.now();
     }
 
     public long getId() {

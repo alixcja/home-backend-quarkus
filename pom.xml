@@ -83,6 +83,10 @@
             <artifactId>url-connection-client</artifactId>
             <version>2.28.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-validator</artifactId>
+        </dependency>
 
         <!-- test dependencies -->
         <dependency>

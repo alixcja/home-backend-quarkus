@@ -4,16 +4,20 @@ import de.explore.grabby.booking.model.Booking;
 import de.explore.grabby.booking.repository.BookingRepository;
 import de.explore.grabby.booking.service.BookingService;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static jakarta.ws.rs.core.Response.Status.*;
+import static jakarta.ws.rs.core.Response.Status.CREATED;
+import static jakarta.ws.rs.core.Response.Status.NO_CONTENT;
 
 @Path("/bookings")
 public class BookingResource {
@@ -31,6 +35,8 @@ public class BookingResource {
     this.service = service;
     this.jwt = jwt;
   }
+
+  // TODO: Add endpoint to adjust start- and / or enddate of a not active booking?
 
   @Path("/{id}")
   @GET
@@ -61,7 +67,7 @@ public class BookingResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @APIResponse(responseCode = "201", description = "Successfully booked entities")
   @APIResponse(responseCode = "400", description = "Invalid input")
-  public Response createBookings(List<Booking> newBookings) {
+  public Response createBookings(@NotNull @Valid List<Booking> newBookings) {
     bookingRepository.create(newBookings, jwt.getSubject());
     return Response.status(CREATED).build();
   }
@@ -73,10 +79,8 @@ public class BookingResource {
   @APIResponse(responseCode = "404", description = "No booking found for provided id")
   public Response cancelBookingById(@PathParam("id") long id) {
     ensureBookingExists(id);
-    boolean successfullyCanceled = bookingRepository.cancelById(id);
-    if (!successfullyCanceled) {
-      throw new BadRequestException("Could not cancel booking with id: " + id);
-    }
+    ensureBookingIsNotActive(id);
+    bookingRepository.cancelById(id);
     return Response.status(NO_CONTENT).build();
   }
 
@@ -87,10 +91,8 @@ public class BookingResource {
   @APIResponse(responseCode = "404", description = "No booking found for provided id")
   public Response returnBookingById(@PathParam("id") long id) {
     ensureBookingExists(id);
-    boolean successfullyReturned = bookingRepository.returnById(id);
-    if (!successfullyReturned) {
-      throw new BadRequestException("Booking is not active");
-    }
+    ensureBookingIsActive(id);
+    bookingRepository.returnById(id);
     return Response.status(NO_CONTENT).build();
   }
 
@@ -114,5 +116,22 @@ public class BookingResource {
 
   private void ensureBookingExists(Long id) {
     bookingRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
+  }
+
+  private void ensureBookingIsActive(long id) {
+    Booking bookingToReturn = bookingRepository.findById(id);
+    boolean startDateBeforeEndDate = bookingToReturn.getStartDate().isBefore(LocalDate.now());
+    boolean endDateAfterNow = bookingToReturn.getEndDate().isAfter(LocalDate.now());
+    if (!startDateBeforeEndDate || !endDateAfterNow) {
+      throw new BadRequestException("Booking is not active");
+    }
+  }
+
+  private void ensureBookingIsNotActive(long id) {
+    Booking bookingToCancel = bookingRepository.findById(id);
+    boolean isStartDateAfterNow = bookingToCancel.getStartDate().isAfter(LocalDate.now());
+    if (!isStartDateAfterNow) {
+      throw new BadRequestException("Booking is already active");
+    }
   }
 }

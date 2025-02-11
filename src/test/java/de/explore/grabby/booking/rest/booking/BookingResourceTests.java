@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.is;
 
 @TestHTTPEndpoint(BookingResource.class)
@@ -144,7 +145,7 @@ class BookingResourceTests {
             .body(List.of(newBooking))
             .post()
             .then()
-            .statusCode(201);
+            .statusCode(SC_CREATED);
   }
 
   @Test
@@ -154,7 +155,7 @@ class BookingResourceTests {
             .pathParams("id", booking2.getId())
             .put("/cancel/{id}")
             .then()
-            .statusCode(204);
+            .statusCode(SC_NO_CONTENT);
   }
 
   @Test
@@ -164,7 +165,7 @@ class BookingResourceTests {
             .pathParams("id", booking7.getId())
             .put("/return/{id}")
             .then()
-            .statusCode(204);
+            .statusCode(SC_NO_CONTENT);
   }
 
   @Test
@@ -175,7 +176,7 @@ class BookingResourceTests {
             .body(2)
             .put("/extend/{id}")
             .then()
-            .statusCode(204);
+            .statusCode(SC_NO_CONTENT);
   }
 
   @Test
@@ -187,7 +188,7 @@ class BookingResourceTests {
             .body(2)
             .put("/extend/{id}")
             .then()
-            .statusCode(400);
+            .statusCode(SC_BAD_REQUEST);
   }
 
   @Transactional
@@ -204,7 +205,7 @@ class BookingResourceTests {
             .body(9)
             .put("/extend/{id}")
             .then()
-            .statusCode(400);
+            .statusCode(SC_BAD_REQUEST);
   }
 
   @AfterEach

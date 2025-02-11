@@ -18,6 +18,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.apache.http.HttpStatus.SC_NO_CONTENT;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.is;
 
 @TestHTTPEndpoint(FavoriteResource.class)
@@ -64,7 +66,7 @@ class FavoriteResourceTests {
             .when()
             .get()
             .then()
-            .statusCode(200)
+            .statusCode(SC_OK)
             .body("size()", is(2));
   }
 
@@ -84,7 +86,7 @@ class FavoriteResourceTests {
             .body(favorite)
             .post()
             .then()
-            .statusCode(204);
+            .statusCode(SC_NO_CONTENT);
   }
 
   @Test
@@ -94,7 +96,7 @@ class FavoriteResourceTests {
             .pathParams("id", favorite1.getFavoriteId())
             .delete("/{id}")
             .then()
-            .statusCode(204);
+            .statusCode(SC_NO_CONTENT);
   }
 
   @AfterEach

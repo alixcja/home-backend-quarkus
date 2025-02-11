@@ -17,9 +17,8 @@ public class BookingService {
 
   public boolean extendById(long bookingId, long requestedDays) {
     Booking requestedBooking = repository.findById(bookingId);
-    BookingEntity entity = requestedBooking.getBookingEntity();
     LocalDate requestedEndDate = requestedBooking.getEndDate().plusDays(requestedDays);
-    boolean isEntityAvailable = ensureEntityIsAvailable(requestedBooking.getId(), entity, requestedBooking.getEndDate(), requestedEndDate);
+    boolean isEntityAvailable = ensureEntityIsAvailable(requestedBooking.getId(), requestedBooking.getBookingEntity(), requestedBooking.getEndDate(), requestedEndDate);
     if (!isEntityAvailable) {
       return false;
     }

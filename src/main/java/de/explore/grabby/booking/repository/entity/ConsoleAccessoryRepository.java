@@ -5,16 +5,11 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
-import java.util.Objects;
 
 @ApplicationScoped
 public class ConsoleAccessoryRepository implements PanacheRepository<ConsoleAccessory> {
-  public boolean persistConsoleAccessory(ConsoleAccessory consoleAccessoryToPersist) {
-    if (!Objects.isNull(consoleAccessoryToPersist)) {
-      persist(consoleAccessoryToPersist);
-      return true;
-    }
-    return false;
+  public void persistConsoleAccessory(ConsoleAccessory consoleAccessoryToPersist) {
+    persist(consoleAccessoryToPersist);
   }
 
   public List<ConsoleAccessory> getAllConsoleAccessories() {

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.is;
 
 @TestHTTPEndpoint(ConsoleAccessoryResource.class)
@@ -43,12 +44,12 @@ class ConsoleAccessoryResourceTests {
   }
 
   @Test
-  void shouldReturnAListWithTwoConsoleAccessorys() {
+  void shouldReturnAListWithTwoConsoleAccessories() {
     given()
             .when()
             .get()
             .then()
-            .statusCode(200)
+            .statusCode(SC_OK)
             .body("size()", is(2));
   }
 
@@ -62,7 +63,7 @@ class ConsoleAccessoryResourceTests {
             .body(newConsoleAccessory)
             .post("/create")
             .then()
-            .statusCode(201);
+            .statusCode(SC_CREATED);
   }
 
   @Test
@@ -72,7 +73,7 @@ class ConsoleAccessoryResourceTests {
             .contentType("application/json")
             .post("/create")
             .then()
-            .statusCode(400);
+            .statusCode(SC_BAD_REQUEST);
   }
 
   @Test
@@ -86,11 +87,11 @@ class ConsoleAccessoryResourceTests {
             .body(updatedConsoleAccessory)
             .put("/update/{id}")
             .then()
-            .statusCode(204);
+            .statusCode(SC_NO_CONTENT);
   }
 
   @Test
-  void shouldFailUpdatingConsoleAccessory() {
+  void shouldFailUpdatingBecauseConsoleAccessoryDoesNotExists() {
     given()
             .when()
             .contentType("application/json")
@@ -98,6 +99,17 @@ class ConsoleAccessoryResourceTests {
             .body(new ConsoleAccessory())
             .put("/update/{id}")
             .then()
-            .statusCode(404);
+            .statusCode(SC_NOT_FOUND);
+  }
+  @Test
+  void shouldFailUpdatingBecauseOfInvalidInput() {
+    given()
+            .when()
+            .contentType("application/json")
+            .pathParams("id", consoleAccessory2.getId())
+            .body(new ConsoleAccessory())
+            .put("/update/{id}")
+            .then()
+            .statusCode(SC_BAD_REQUEST);
   }
 }

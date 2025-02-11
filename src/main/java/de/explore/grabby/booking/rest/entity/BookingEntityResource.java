@@ -10,6 +10,8 @@ import de.explore.grabby.booking.service.BookingEntityService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -99,7 +101,7 @@ public class BookingEntityResource {
   @APIResponse(responseCode = "400", description = "File is empty")
   @APIResponse(responseCode = "404", description = "No entity found for provided id")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
-  public void uploadImageForEntity(@PathParam("id") long id, UploadForm uploadForm) {
+  public void uploadImageForEntity(@PathParam("id") long id, @Valid @NotNull UploadForm uploadForm) {
     ensureEntityExists(id);
     if (uploadForm.file == null) {
       throw new BadRequestException("File is empty");

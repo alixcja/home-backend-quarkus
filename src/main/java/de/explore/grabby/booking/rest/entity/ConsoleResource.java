@@ -5,6 +5,8 @@ import de.explore.grabby.booking.repository.entity.ConsoleRepository;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -22,11 +24,8 @@ public class ConsoleResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response addConsole(Console console) {
-        boolean creationWasSuccessful = consoleRepository.persistConsole(console);
-        if (!creationWasSuccessful) {
-            throw new BadRequestException("Invalid input");
-        };
+    public Response addConsole(@Valid @NotNull Console console) {
+        consoleRepository.persistConsole(console);
         return Response.status(Response.Status.CREATED).build();
     }
 
@@ -35,7 +34,7 @@ public class ConsoleResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public void updateConsole(@PathParam("id") long id, Console console) {
+    public void updateConsole(@PathParam("id") long id, @Valid @NotNull Console console) {
         consoleRepository.updateConsole(id, console);
     }
 

@@ -15,6 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.is;
 
 @QuarkusTest
@@ -60,7 +62,7 @@ class UsersResourceTest {
             .when()
             .get("/me")
             .then()
-            .statusCode(200)
+            .statusCode(SC_OK)
             .body("identifier", is(users1.getIdentifier()));
   }
 
@@ -78,7 +80,7 @@ class UsersResourceTest {
             .when()
             .get("/me")
             .then()
-            .statusCode(200)
+            .statusCode(SC_OK)
             .body("identifier", is("ghi789"));
   }
 
@@ -90,7 +92,7 @@ class UsersResourceTest {
             .pathParams("identifier", users2.getIdentifier())
             .get("/{identifier}")
             .then()
-            .statusCode(200)
+            .statusCode(SC_OK)
             .body("identifier", is(users2.getIdentifier()))
             .body("firstName", is(users2.getFirstName()))
             .body("lastName", is(users2.getLastName()));
@@ -104,7 +106,7 @@ class UsersResourceTest {
             .pathParams("identifier", "non-existing-identifier")
             .get("/{identifier}")
             .then()
-            .statusCode(404);
+            .statusCode(SC_NOT_FOUND);
   }
 
   @AfterEach

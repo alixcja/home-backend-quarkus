@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.is;
 
 @TestHTTPEndpoint(GameResource.class)
@@ -48,7 +49,7 @@ class GameResourceTests {
             .when()
             .get()
             .then()
-            .statusCode(200)
+            .statusCode(SC_OK)
             .body("size()", is(2));
   }
 
@@ -62,7 +63,7 @@ class GameResourceTests {
             .body(newGame)
             .post("/create")
             .then()
-            .statusCode(201);
+            .statusCode(SC_CREATED);
   }
 
   @Test
@@ -72,7 +73,7 @@ class GameResourceTests {
             .contentType("application/json")
             .post("/create")
             .then()
-            .statusCode(400);
+            .statusCode(SC_BAD_REQUEST);
   }
 
   @Test
@@ -86,7 +87,7 @@ class GameResourceTests {
             .body(updatedGame)
             .put("/update/{id}")
             .then()
-            .statusCode(204);
+            .statusCode(SC_NO_CONTENT);
   }
 
   @Test
@@ -98,6 +99,6 @@ class GameResourceTests {
             .body(new Game())
             .put("/update/{id}")
             .then()
-            .statusCode(404);
+            .statusCode(SC_NOT_FOUND);
   }
 }

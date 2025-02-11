@@ -5,6 +5,8 @@ import de.explore.grabby.booking.repository.entity.GameRepository;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -22,7 +24,7 @@ public class GameResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response addGame(Game game) {
+    public Response addGame(@Valid @NotNull Game game) {
         boolean creationWasSuccessful = gameRepository.persistGame(game);
         if (!creationWasSuccessful) {
             throw new BadRequestException("Invalid input");
@@ -35,7 +37,7 @@ public class GameResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public void updateGame(@PathParam("id") long id, Game game) {
+    public void updateGame(@PathParam("id") long id, @Valid @NotNull Game game) {
         gameRepository.updateGame(id, game);
     }
 
