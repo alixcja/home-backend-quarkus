@@ -6,14 +6,23 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("/user")
 public class UserResource {
   private final UserRepository userRepository;
+  private final JsonWebToken jwt;
 
   @Inject
-  public UserResource(UserRepository userRepository) {
+  public UserResource(UserRepository userRepository, JsonWebToken jwt) {
     this.userRepository = userRepository;
+    this.jwt = jwt;
+  }
+
+  @GET
+  @Path("/me")
+  public Users getMyUser() {
+    return userRepository.getMyUser(jwt);
   }
 
   @GET
