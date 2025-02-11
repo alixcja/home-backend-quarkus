@@ -16,34 +16,31 @@ import java.util.List;
 @Path("/games")
 public class GameResource {
 
-    @Inject
-    GameRepository gameRepository;
+  @Inject
+  GameRepository gameRepository;
 
-    @RolesAllowed("${admin-role}")
-    @Path("/create")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Transactional
-    public Response addGame(@Valid @NotNull Game game) {
-        boolean creationWasSuccessful = gameRepository.persistGame(game);
-        if (!creationWasSuccessful) {
-            throw new BadRequestException("Invalid input");
-        }
-        return Response.status(Response.Status.CREATED).build();
-    }
+  @RolesAllowed("${admin-role}")
+  @Path("/create")
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Transactional
+  public Response addGame(@Valid @NotNull Game game) {
+    gameRepository.persistGame(game);
+    return Response.status(Response.Status.CREATED).build();
+  }
 
-    @RolesAllowed("${admin-role}")
-    @Path("/update/{id}")
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Transactional
-    public void updateGame(@PathParam("id") long id, @Valid @NotNull Game game) {
-        gameRepository.updateGame(id, game);
-    }
+  @RolesAllowed("${admin-role}")
+  @Path("/update/{id}")
+  @PUT
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Transactional
+  public void updateGame(@PathParam("id") long id, @Valid @NotNull Game game) {
+    gameRepository.updateGame(id, game);
+  }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Game> getAllGames() {
-        return gameRepository.getAllGames();
-    }
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<Game> getAllGames() {
+    return gameRepository.getAllGames();
+  }
 }

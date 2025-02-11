@@ -5,30 +5,25 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
-import java.util.Objects;
 
 @ApplicationScoped
 public class GameRepository implements PanacheRepository<Game> {
 
-    public boolean persistGame(Game gameToPersist) {
-        if (!Objects.isNull(gameToPersist)) {
-            persist(gameToPersist);
-            return true;
-        }
-        return false;
-    }
+  public void persistGame(Game gameToPersist) {
+    persist(gameToPersist);
+  }
 
-    public List<Game> getAllGames() {
-        return listAll();
-    }
+  public List<Game> getAllGames() {
+    return listAll();
+  }
 
-    public void updateGame(long id, Game game) {
-        Game gameToUpdate = findById(id);
-        if (gameToUpdate != null) {
-            gameToUpdate.setName(game.getName());
-            gameToUpdate.setDescription(game.getDescription());
-            gameToUpdate.setConsoleType(game.getConsoleType());
-            persist(gameToUpdate);
-        }
+  public void updateGame(long id, Game game) {
+    Game gameToUpdate = findById(id);
+    if (gameToUpdate != null) {
+      gameToUpdate.setName(game.getName());
+      gameToUpdate.setDescription(game.getDescription());
+      gameToUpdate.setConsoleType(game.getConsoleType());
+      persist(gameToUpdate);
     }
+  }
 }
