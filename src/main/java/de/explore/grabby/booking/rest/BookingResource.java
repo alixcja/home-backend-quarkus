@@ -91,7 +91,7 @@ public class BookingResource {
   @APIResponse(responseCode = "404", description = "No booking found for provided id")
   public Response returnBookingById(@PathParam("id") long id) {
     ensureBookingExists(id);
-    ensureBookingIsActive(id);
+    ensureBookingIsExpired(id);
     bookingRepository.returnById(id);
     return Response.status(NO_CONTENT).build();
   }
@@ -118,11 +118,10 @@ public class BookingResource {
     bookingRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
-  private void ensureBookingIsActive(long id) {
+  private void ensureBookingIsExpired(long id) {
     Booking bookingToReturn = bookingRepository.findById(id);
-    boolean startDateBeforeEndDate = bookingToReturn.getStartDate().isBefore(LocalDate.now());
-    boolean endDateAfterNow = bookingToReturn.getEndDate().isAfter(LocalDate.now());
-    if (!startDateBeforeEndDate || !endDateAfterNow) {
+    boolean endDateAfterNow = bookingToReturn.getEndDate().isBefore(LocalDate.now());
+    if (!endDateAfterNow) {
       throw new BadRequestException("Booking is not active");
     }
   }

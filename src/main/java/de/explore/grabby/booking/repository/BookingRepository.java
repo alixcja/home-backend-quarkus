@@ -30,6 +30,7 @@ public class BookingRepository implements PanacheRepository<Booking> {
     persist(bookingToCancel);
   }
 
+  @Transactional
   public void returnById(long id) {
     Booking bookingToReturn = findById(id);
     bookingToReturn.setIsReturned(true);
