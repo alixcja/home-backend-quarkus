@@ -77,7 +77,7 @@ public class BookingEntityResource {
     ensureEntityExists(id);
     ResponseInputStream<GetObjectResponse> response = bookingEntityService.getImageForEntity(id);
     if (response == null) {
-      return Response.noContent().build();
+      response = bookingEntityService.getDefaultEntityImage();
     }
     return Response.ok(response).build();
   }

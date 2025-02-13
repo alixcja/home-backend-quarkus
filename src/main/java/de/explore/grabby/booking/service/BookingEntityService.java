@@ -14,6 +14,8 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 @ApplicationScoped
 public class BookingEntityService {
 
+  public static final String DEFAULT_ENTITY_IMAGE_PNG = "default-entity-image.png";
+
   @Inject
   FileService fileService;
 
@@ -47,5 +49,9 @@ public class BookingEntityService {
       return null;
     }
     return fileService.getImage(bookingEntity.getImage().getBucket(), bookingEntity.getImage().getFilename());
+  }
+
+  public ResponseInputStream<GetObjectResponse> getDefaultEntityImage() {
+    return fileService.getImage(bucket, DEFAULT_ENTITY_IMAGE_PNG);
   }
 }

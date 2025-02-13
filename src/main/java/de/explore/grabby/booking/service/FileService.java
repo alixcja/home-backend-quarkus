@@ -26,11 +26,15 @@ public class FileService {
   public String uploadImage(String bucket, UploadForm uploadForm) {
     ensureBucketExists(bucket);
     String fileName = UUID.randomUUID().toString();
+    createRequestAndUploadImage(bucket, uploadForm, fileName);
+    return fileName;
+  }
+
+  private void createRequestAndUploadImage(String bucket, UploadForm uploadForm, String fileName) {
     PutObjectRequest putObjectRequest = createPutObjectRequest(bucket, fileName);
     LOG.info("Uploading file {} to bucket {}", bucket, fileName);
     s3.putObject(putObjectRequest, RequestBody
             .fromFile(uploadForm.file));
-    return fileName;
   }
 
   private PutObjectRequest createPutObjectRequest(String bucket, String fileName) {

@@ -178,16 +178,6 @@ public class BookingEntityResourceTests {
             .body(notNullValue());
   }
 
-  @Test
-  void shouldReturnNoImageOfGame() {
-    given().when().
-            pathParams("id", game2.getId())
-            .get("/{id}/image")
-            .then()
-            .statusCode(SC_NO_CONTENT);
-  }
-
-
   @AfterEach
   @Transactional
   void tearDown() {
