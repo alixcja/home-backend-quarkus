@@ -20,17 +20,16 @@ public class ConsoleResource {
     ConsoleRepository consoleRepository;
 
     @RolesAllowed("${admin-role}")
-    @Path("/create")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response addConsole(@Valid @NotNull Console console) {
-        consoleRepository.persistConsole(console);
-        return Response.status(Response.Status.CREATED).build();
+        long id = consoleRepository.persistConsole(console);
+        return Response.status(Response.Status.CREATED).entity(id).build();
     }
 
     @RolesAllowed("${admin-role}")
-    @Path("/update/{id}")
+    @Path("/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional

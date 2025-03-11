@@ -9,8 +9,9 @@ import java.util.List;
 @ApplicationScoped
 public class GameRepository implements PanacheRepository<Game> {
 
-  public void persistGame(Game gameToPersist) {
+  public long persistGame(Game gameToPersist) {
     persist(gameToPersist);
+    return gameToPersist.getId();
   }
 
   public List<Game> getAllGames() {

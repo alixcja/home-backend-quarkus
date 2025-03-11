@@ -20,17 +20,16 @@ public class ConsoleAccessoryResource {
     ConsoleAccessoryRepository consoleAccessoryRepository;
 
     @RolesAllowed("${admin-role}")
-    @Path("/create")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response addConsoleAccessory(@Valid @NotNull ConsoleAccessory consoleAccessory) {
-        consoleAccessoryRepository.persistConsoleAccessory(consoleAccessory);
-        return Response.status(Response.Status.CREATED).build();
+        long id = consoleAccessoryRepository.persistConsoleAccessory(consoleAccessory);
+        return Response.status(Response.Status.CREATED).entity(id).build();
     }
 
     @RolesAllowed("${admin-role}")
-    @Path("/update/{id}")
+    @Path("/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional

@@ -8,8 +8,9 @@ import java.util.List;
 
 @ApplicationScoped
 public class ConsoleRepository implements PanacheRepository<Console> {
-  public void persistConsole(Console consoleToPersist) {
+  public long persistConsole(Console consoleToPersist) {
     persist(consoleToPersist);
+    return consoleToPersist.getId();
   }
 
   public List<Console> getAllConsoles() {

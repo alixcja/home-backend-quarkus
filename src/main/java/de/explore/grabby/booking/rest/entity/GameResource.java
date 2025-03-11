@@ -20,17 +20,16 @@ public class GameResource {
   GameRepository gameRepository;
 
   @RolesAllowed("${admin-role}")
-  @Path("/create")
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Transactional
   public Response addGame(@Valid @NotNull Game game) {
-    gameRepository.persistGame(game);
-    return Response.status(Response.Status.CREATED).build();
+    long id = gameRepository.persistGame(game);
+    return Response.status(Response.Status.CREATED).entity(id).build();
   }
 
   @RolesAllowed("${admin-role}")
-  @Path("/update/{id}")
+  @Path("/{id}")
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Transactional
