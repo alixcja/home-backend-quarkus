@@ -1,6 +1,7 @@
 package de.explore.grabby.booking.rest;
 
 import de.explore.grabby.booking.model.Favorite;
+import de.explore.grabby.booking.model.entity.BookingEntity;
 import de.explore.grabby.booking.repository.FavoriteRepository;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -27,8 +28,8 @@ public class FavoriteResource {
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  public void addNewFavorite(Favorite favorite) {
-    favoriteRepository.addNewFavorite(favorite, jwt.getSubject());
+  public void addNewFavorite(BookingEntity entity) {
+    favoriteRepository.addNewFavorite(entity, jwt.getSubject());
   }
 
   @DELETE
