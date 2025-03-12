@@ -5,6 +5,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -35,5 +36,9 @@ public class BookingEntityRepository implements PanacheRepository<BookingEntity>
 
   public List<BookingEntity> listAllNotArchived() {
     return find("isArchived is false").list();
+  }
+
+  public List<BookingEntity> newEntityWasAdded() {
+      return find("addedOn >= ?1", LocalDate.now().minusDays(7)).stream().toList();
   }
 }

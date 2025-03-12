@@ -60,4 +60,12 @@ public class BookingRepository implements PanacheRepository<Booking> {
   public List<Booking> listAllBookings(String userId) {
     return find("userId = ?1", userId).stream().toList();
   }
+
+  public List<Booking> aBookingForUserStartsToday(String identifier) {
+      return find("startDate = ?1 and userId = ?2", LocalDate.now(), identifier).list();
+  }
+
+  public List<Booking> findSoonOverdueBookingsOfUser(String identifier) {
+    return find("isReturned = False and endDate >= ?1 and endDate <= ?2 and userId = ?3", LocalDate.now(), LocalDate.now().plusDays(2), identifier).stream().toList();
+  }
 }

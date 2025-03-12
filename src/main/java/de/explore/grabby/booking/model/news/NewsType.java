@@ -1,0 +1,10 @@
+package de.explore.grabby.booking.model.news;
+
+public enum NewsType {
+  NEWS_SOON_LUNCHTIME,
+  NEWS_VOTING_AVAILABLE,
+  NEWS_SOON_OVERDUE_BOOKINGS,
+  NEWS_OVERDUE_BOOKINGS,
+  NEWS_NEW_ENTITY,
+  NEWS_BOOKING_STARTS_TODAY
+}
