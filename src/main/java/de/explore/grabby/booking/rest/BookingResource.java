@@ -120,8 +120,8 @@ public class BookingResource {
 
   private void ensureBookingIsExpired(long id) {
     Booking bookingToReturn = bookingRepository.findById(id);
-    boolean endDateAfterNow = bookingToReturn.getEndDate().isBefore(LocalDate.now().plusDays(1));
-    if (!endDateAfterNow) {
+    boolean isStartDateBeforeNow = bookingToReturn.getStartDate().isBefore(LocalDate.now());
+    if (!isStartDateBeforeNow) {
       throw new BadRequestException("Booking is not active");
     }
   }

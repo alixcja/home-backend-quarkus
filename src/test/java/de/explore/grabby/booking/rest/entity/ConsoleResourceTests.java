@@ -61,7 +61,7 @@ class ConsoleResourceTests {
             .when()
             .contentType("application/json")
             .body(newConsole)
-            .post("/create")
+            .post()
             .then()
             .statusCode(SC_CREATED);
   }
@@ -71,7 +71,7 @@ class ConsoleResourceTests {
     given()
             .when()
             .contentType("application/json")
-            .post("/create")
+            .post()
             .then()
             .statusCode(SC_BAD_REQUEST);
   }
@@ -85,7 +85,7 @@ class ConsoleResourceTests {
             .contentType("application/json")
             .pathParams("id", console2.getId())
             .body(updatedConsole)
-            .put("/update/{id}")
+            .put("/{id}")
             .then()
             .statusCode(SC_NO_CONTENT);
   }
@@ -97,7 +97,7 @@ class ConsoleResourceTests {
             .contentType("application/json")
             .pathParams("id", "non-existing-game")
             .body(new Console())
-            .put("/update/{id}")
+            .put("/{id}")
             .then()
             .statusCode(SC_NOT_FOUND);
   }

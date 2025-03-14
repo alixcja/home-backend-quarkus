@@ -61,7 +61,7 @@ class GameResourceTests {
             .when()
             .contentType("application/json")
             .body(newGame)
-            .post("/create")
+            .post()
             .then()
             .statusCode(SC_CREATED);
   }
@@ -71,7 +71,7 @@ class GameResourceTests {
     given()
             .when()
             .contentType("application/json")
-            .post("/create")
+            .post()
             .then()
             .statusCode(SC_BAD_REQUEST);
   }
@@ -85,7 +85,7 @@ class GameResourceTests {
             .contentType("application/json")
             .pathParams("id", game1.getId())
             .body(updatedGame)
-            .put("/update/{id}")
+            .put("/{id}")
             .then()
             .statusCode(SC_NO_CONTENT);
   }
@@ -97,7 +97,7 @@ class GameResourceTests {
             .contentType("application/json")
             .pathParams("id", "non-existing-game")
             .body(new Game())
-            .put("/update/{id}")
+            .put("/{id}")
             .then()
             .statusCode(SC_NOT_FOUND);
   }

@@ -61,7 +61,7 @@ class ConsoleAccessoryResourceTests {
             .when()
             .contentType("application/json")
             .body(newConsoleAccessory)
-            .post("/create")
+            .post()
             .then()
             .statusCode(SC_CREATED);
   }
@@ -71,7 +71,7 @@ class ConsoleAccessoryResourceTests {
     given()
             .when()
             .contentType("application/json")
-            .post("/create")
+            .post()
             .then()
             .statusCode(SC_BAD_REQUEST);
   }
@@ -85,7 +85,7 @@ class ConsoleAccessoryResourceTests {
             .contentType("application/json")
             .pathParams("id", consoleAccessory2.getId())
             .body(updatedConsoleAccessory)
-            .put("/update/{id}")
+            .put("{id}")
             .then()
             .statusCode(SC_NO_CONTENT);
   }
@@ -97,7 +97,7 @@ class ConsoleAccessoryResourceTests {
             .contentType("application/json")
             .pathParams("id", "non-existing-game")
             .body(new ConsoleAccessory())
-            .put("/update/{id}")
+            .put("/{id}")
             .then()
             .statusCode(SC_NOT_FOUND);
   }
@@ -108,7 +108,7 @@ class ConsoleAccessoryResourceTests {
             .contentType("application/json")
             .pathParams("id", consoleAccessory2.getId())
             .body(new ConsoleAccessory())
-            .put("/update/{id}")
+            .put("/{id}")
             .then()
             .statusCode(SC_BAD_REQUEST);
   }

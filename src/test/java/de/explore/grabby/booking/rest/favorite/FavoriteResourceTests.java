@@ -18,8 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.apache.http.HttpStatus.SC_NO_CONTENT;
-import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.is;
 
 @TestHTTPEndpoint(FavoriteResource.class)
@@ -78,15 +77,13 @@ class FavoriteResourceTests {
           }
   )
   void shouldPersistNewFavorite() {
-    Favorite favorite = new Favorite("ghi789", game3);
-
     given()
             .when()
             .contentType(MediaType.APPLICATION_JSON)
-            .body(favorite)
+            .body(game3)
             .post()
             .then()
-            .statusCode(SC_NO_CONTENT);
+            .statusCode(SC_CREATED);
   }
 
   @Test

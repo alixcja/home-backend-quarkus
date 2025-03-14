@@ -12,11 +12,12 @@ import java.util.List;
 public class FavoriteRepository implements PanacheRepository<Favorite> {
 
   @Transactional
-  public void addNewFavorite(BookingEntity entity, String userId) {
+  public Favorite addNewFavorite(BookingEntity entity, String userId) {
     Favorite newFav = new Favorite();
     newFav.setUserId(userId);
     newFav.setFavorite(entity);
     persist(newFav);
+    return newFav;
   }
 
   @Transactional

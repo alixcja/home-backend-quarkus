@@ -144,7 +144,7 @@ public class BookingEntityResourceTests {
             .pathParams("id", game1.getId())
             .put("/{id}/image")
             .then()
-            .statusCode(SC_NO_CONTENT);
+            .statusCode(SC_CREATED);
 
     BookingEntity newGame = repository.findById(game1.getId());
     assertNotNull(newGame.getImage());
