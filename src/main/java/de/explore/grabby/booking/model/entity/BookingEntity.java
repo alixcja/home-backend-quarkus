@@ -33,7 +33,6 @@ public abstract class BookingEntity implements Serializable {
 
     private String description;
 
-    @NotBlank(message = "Type of entity may not be blank")
     @Column(insertable = false, updatable = false)
     private String type;
 
