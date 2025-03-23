@@ -24,14 +24,8 @@ public class NewsService {
 
     allCurrentNews.addAll(fetchBookingsStartingToday(identifier));
     allCurrentNews.addAll(fetchNewEntities());
-
-    if (hasSoonOverdueBookings(identifier)) {
-      allCurrentNews.add(new News(NewsType.NEWS_SOON_OVERDUE_BOOKINGS));
-    }
-
-    if (hasOverdueBookings(identifier)) {
-      allCurrentNews.add(new News(NewsType.NEWS_OVERDUE_BOOKINGS));
-    }
+    allCurrentNews.addAll(fetchSoonOverdueBookings(identifier));
+    allCurrentNews.addAll(fetchOverdueBookings(identifier));
 
     return allCurrentNews;
   }
@@ -39,22 +33,32 @@ public class NewsService {
   private List<News> fetchNewEntities() {
     return bookingEntityRepository.newEntityWasAdded()
             .stream()
-            .map(entity -> new News(NewsType.NEWS_NEW_ENTITY, entity))
+            .map(entity
+                    -> new News(NewsType.NEWS_NEW_ENTITY, entity))
             .toList();
   }
 
   private List<News> fetchBookingsStartingToday(String identifier) {
     return bookingRepository.aBookingForUserStartsToday(identifier)
             .stream()
-            .map(booking -> new News(NewsType.NEWS_BOOKING_STARTS_TODAY, booking.getBookingEntity()))
+            .map(booking
+                    -> new News(NewsType.NEWS_BOOKING_STARTS_TODAY, booking.getBookingEntity()))
             .toList();
   }
 
-  private boolean hasSoonOverdueBookings(String identifier) {
-    return !bookingRepository.findSoonOverdueBookingsOfUser(identifier).isEmpty();
+  private List<News> fetchSoonOverdueBookings(String identifier) {
+    return bookingRepository.findSoonOverdueBookingsOfUser(identifier)
+            .stream()
+            .map(booking
+                    -> new News(NewsType.NEWS_SOON_OVERDUE_BOOKINGS))
+            .toList();
   }
 
-  private boolean hasOverdueBookings(String identifier) {
-    return !bookingRepository.listAllOverdueBookings(identifier).isEmpty();
+  private List<News> fetchOverdueBookings(String identifier) {
+    return bookingRepository.listAllOverdueBookings(identifier)
+            .stream()
+            .map(booking
+                    -> new News(NewsType.NEWS_OVERDUE_BOOKINGS))
+            .toList();
   }
 }
