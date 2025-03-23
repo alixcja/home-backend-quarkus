@@ -42,7 +42,7 @@ public class NewsService {
     return bookingRepository.aBookingForUserStartsToday(identifier)
             .stream()
             .map(booking
-                    -> new News(NewsType.NEWS_BOOKING_STARTS_TODAY, booking.getBookingEntity()))
+                    -> new News(NewsType.NEWS_BOOKING_STARTS_TODAY, booking))
             .toList();
   }
 
@@ -50,7 +50,7 @@ public class NewsService {
     return bookingRepository.findSoonOverdueBookingsOfUser(identifier)
             .stream()
             .map(booking
-                    -> new News(NewsType.NEWS_SOON_OVERDUE_BOOKINGS))
+                    -> new News(NewsType.NEWS_SOON_OVERDUE_BOOKINGS, booking))
             .toList();
   }
 
@@ -58,7 +58,7 @@ public class NewsService {
     return bookingRepository.listAllOverdueBookings(identifier)
             .stream()
             .map(booking
-                    -> new News(NewsType.NEWS_OVERDUE_BOOKINGS))
+                    -> new News(NewsType.NEWS_OVERDUE_BOOKINGS, booking))
             .toList();
   }
 }
