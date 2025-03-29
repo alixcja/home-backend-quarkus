@@ -54,7 +54,7 @@ public class BookingRepository implements PanacheRepository<Booking> {
   }
 
   public List<Booking> listAllCurrentAndInFutureBookings(String userId) {
-    return find("isReturned = False and endDate >= ?1 and userId = ?2", LocalDate.now(), userId).stream().toList();
+    return find("isReturned = False and isCancelled = False and endDate >= ?1 and userId = ?2", LocalDate.now(), userId).stream().toList();
   }
 
   public List<Booking> listAllBookings(String userId) {
