@@ -68,4 +68,8 @@ public class BookingRepository implements PanacheRepository<Booking> {
   public List<Booking> findSoonOverdueBookingsOfUser(String identifier) {
     return find("isReturned = False and endDate >= ?1 and endDate <= ?2 and userId = ?3", LocalDate.now(), LocalDate.now().plusDays(2), identifier).stream().toList();
   }
+
+  public long listByUser(String subject) {
+    return find("userId = ?1 and isReturned = False and isCancelled = False", subject).stream().count();
+  }
 }

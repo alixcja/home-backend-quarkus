@@ -68,8 +68,20 @@ public class BookingResource {
   @APIResponse(responseCode = "201", description = "Successfully booked entities")
   @APIResponse(responseCode = "400", description = "Invalid input")
   public Response createBookings(@NotNull @Valid List<Booking> newBookings) {
+    verifyUserDoesNotHaveMoreThanFiveBookings(newBookings.size());
     bookingRepository.create(newBookings, jwt.getSubject());
     return Response.status(CREATED).build();
+  }
+
+  private void verifyUserDoesNotHaveMoreThanFiveBookings(int newBookingsSize) {
+    long currentBookingsSize = bookingRepository.listByUser(jwt.getSubject());
+    if (currentBookingsSize > 5) {
+      throw new BadRequestException("Booking limit has been reached");
+    }
+    if (currentBookingsSize + newBookingsSize > 5) {
+      throw new BadRequestException("Booking limit would be reached");
+
+    }
   }
 
   @Path("/cancel/{id}")
