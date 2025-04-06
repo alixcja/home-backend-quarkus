@@ -15,19 +15,15 @@ public class BookingEntityRepository implements PanacheRepository<BookingEntity>
   @Transactional
   public void archiveEntityById(long id) {
     BookingEntity entityToArchive = findById(id);
-    if (entityToArchive != null) {
-      entityToArchive.setIsArchived(true);
-      persist(entityToArchive);
-    }
+    entityToArchive.setIsArchived(true);
+    persist(entityToArchive);
   }
 
   @Transactional
   public void unarchiveEntityById(long id) {
     BookingEntity entityToUnarchive = findById(id);
-    if (entityToUnarchive != null) {
-      entityToUnarchive.setIsArchived(false);
-      persist(entityToUnarchive);
-    }
+    entityToUnarchive.setIsArchived(false);
+    persist(entityToUnarchive);
   }
 
   public List<BookingEntity> listAllArchived() {
@@ -39,6 +35,6 @@ public class BookingEntityRepository implements PanacheRepository<BookingEntity>
   }
 
   public List<BookingEntity> newEntityWasAdded() {
-      return find("addedOn >= ?1", LocalDate.now().minusDays(7)).stream().toList();
+    return find("addedOn >= ?1", LocalDate.now().minusDays(7)).stream().toList();
   }
 }

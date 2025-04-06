@@ -115,15 +115,20 @@ public class BookingResource {
   @APIResponse(responseCode = "404", description = "No booking found for provided id")
   public Response extendBookingById(@PathParam("id") long id, int requestedDays) {
     ensureBookingExists(id);
-    if (requestedDays > MAX_REQUEST_DAYS) {
-      throw new BadRequestException("Booking cannot be extended by more then 7 days");
-    }
+    ensureRequestedDaysAreNotExceeded(requestedDays);
+
     boolean successfullyExtended = service.extendById(id, requestedDays);
 
     if (!successfullyExtended) {
       throw new BadRequestException("Booking was already booked");
     }
     return Response.status(NO_CONTENT).build();
+  }
+
+  private void ensureRequestedDaysAreNotExceeded(int requestedDays) {
+    if (requestedDays > MAX_REQUEST_DAYS) {
+      throw new BadRequestException("Booking cannot be extended by more then 7 days");
+    }
   }
 
   private void ensureBookingExists(Long id) {
@@ -141,6 +146,7 @@ public class BookingResource {
   private void ensureBookingIsNotActive(long id) {
     Booking bookingToCancel = bookingRepository.findById(id);
     boolean isStartDateAfterNow = bookingToCancel.getStartDate().isAfter(LocalDate.now());
+
     if (!isStartDateAfterNow) {
       throw new BadRequestException("Booking is already active");
     }

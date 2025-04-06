@@ -20,11 +20,9 @@ public class GameRepository implements PanacheRepository<Game> {
 
   public void updateGame(long id, Game game) {
     Game gameToUpdate = findById(id);
-    if (gameToUpdate != null) {
-      gameToUpdate.setName(game.getName());
-      gameToUpdate.setDescription(game.getDescription());
-      gameToUpdate.setConsoleType(game.getConsoleType());
-      persist(gameToUpdate);
-    }
+    gameToUpdate.setName(game.getName());
+    gameToUpdate.setDescription(game.getDescription());
+    gameToUpdate.setConsoleType(game.getConsoleType());
+    persist(gameToUpdate);
   }
 }

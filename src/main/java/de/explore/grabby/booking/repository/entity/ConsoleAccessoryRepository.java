@@ -19,10 +19,8 @@ public class ConsoleAccessoryRepository implements PanacheRepository<ConsoleAcce
 
   public void updateConsoleAccessory(long id, ConsoleAccessory consoleAccessory) {
     ConsoleAccessory consoleAccessoryToUpdate = findById(id);
-    if (consoleAccessoryToUpdate != null) {
-      consoleAccessoryToUpdate.setName(consoleAccessory.getName());
-      consoleAccessoryToUpdate.setDescription(consoleAccessory.getDescription());
-      persist(consoleAccessoryToUpdate);
-    }
+    consoleAccessoryToUpdate.setName(consoleAccessory.getName());
+    consoleAccessoryToUpdate.setDescription(consoleAccessory.getDescription());
+    persist(consoleAccessoryToUpdate);
   }
 }

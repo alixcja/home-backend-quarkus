@@ -12,12 +12,19 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Optional;
 
 @Path("/consoles")
 public class ConsoleResource {
 
     @Inject
     ConsoleRepository consoleRepository;
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Console> getAllConsoles() {
+        return consoleRepository.getAllConsoles();
+    }
 
     @RolesAllowed("${admin-role}")
     @POST
@@ -37,9 +44,10 @@ public class ConsoleResource {
         consoleRepository.updateConsole(id, console);
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Console> getAllConsoles() {
-        return consoleRepository.getAllConsoles();
+    public void ensureConsoleExists(long id) {
+        Optional<Console> byId = consoleRepository.findByIdOptional(id);
+        if (byId.isEmpty()) {
+            throw new NotFoundException("Console with id " + id + " was not found");
+        }
     }
 }

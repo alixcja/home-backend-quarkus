@@ -12,34 +12,43 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Optional;
 
 @Path("/accessories")
 public class ConsoleAccessoryResource {
 
-    @Inject
-    ConsoleAccessoryRepository consoleAccessoryRepository;
+  @Inject
+  ConsoleAccessoryRepository consoleAccessoryRepository;
 
-    @RolesAllowed("${admin-role}")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Transactional
-    public Response addConsoleAccessory(@Valid @NotNull ConsoleAccessory consoleAccessory) {
-        long id = consoleAccessoryRepository.persistConsoleAccessory(consoleAccessory);
-        return Response.status(Response.Status.CREATED).entity(id).build();
-    }
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<ConsoleAccessory> getAllConsoleAccessories() {
+    return consoleAccessoryRepository.getAllConsoleAccessories();
+  }
 
-    @RolesAllowed("${admin-role}")
-    @Path("/{id}")
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Transactional
-    public void updateConsoleAccessory(@PathParam("id") long id, @Valid @NotNull ConsoleAccessory consoleAccessory) {
-        consoleAccessoryRepository.updateConsoleAccessory(id, consoleAccessory);
-    }
+  @RolesAllowed("${admin-role}")
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Transactional
+  public Response addConsoleAccessory(@Valid @NotNull ConsoleAccessory consoleAccessory) {
+    long id = consoleAccessoryRepository.persistConsoleAccessory(consoleAccessory);
+    return Response.status(Response.Status.CREATED).entity(id).build();
+  }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<ConsoleAccessory> getAllConsoleAccessories() {
-        return consoleAccessoryRepository.getAllConsoleAccessories();
+  @RolesAllowed("${admin-role}")
+  @Path("/{id}")
+  @PUT
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Transactional
+  public void updateConsoleAccessory(@PathParam("id") long id, @Valid @NotNull ConsoleAccessory consoleAccessory) {
+    ensureConsoleAccessoryExists(id);
+    consoleAccessoryRepository.updateConsoleAccessory(id, consoleAccessory);
+  }
+
+  private void ensureConsoleAccessoryExists(long id) {
+    Optional<ConsoleAccessory> byId = consoleAccessoryRepository.findByIdOptional(id);
+    if (byId.isEmpty()) {
+      throw new NotFoundException("Console Accessory with id " + id + " was not found");
     }
+  }
 }

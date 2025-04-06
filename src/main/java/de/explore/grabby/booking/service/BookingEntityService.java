@@ -29,7 +29,6 @@ public class BookingEntityService {
   public void uploadImageForEntity(Long id, UploadForm form) {
     BookingEntity bookingEntity = bookingEntityRepository.findByIdOptional(id).orElseThrow();
     String filename = fileService.uploadImage(bucket, form);
-
     Image image = createImageObject(filename);
 
     bookingEntity.setImage(image);

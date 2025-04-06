@@ -33,9 +33,9 @@ public class Booking implements Serializable {
   @CreationTimestamp
   private LocalDate bookingDate;
 
-  private Boolean isCancelled;
+  private Boolean isCancelled = false;
 
-  private Boolean isReturned;
+  private Boolean isReturned = false;
 
   public Booking() {
   }

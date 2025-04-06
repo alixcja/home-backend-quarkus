@@ -12,12 +12,19 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Optional;
 
 @Path("/games")
 public class GameResource {
 
   @Inject
   GameRepository gameRepository;
+
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<Game> getAllGames() {
+    return gameRepository.getAllGames();
+  }
 
   @RolesAllowed("${admin-role}")
   @POST
@@ -34,12 +41,14 @@ public class GameResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Transactional
   public void updateGame(@PathParam("id") long id, @Valid @NotNull Game game) {
+    ensureGameExists(id);
     gameRepository.updateGame(id, game);
   }
 
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  public List<Game> getAllGames() {
-    return gameRepository.getAllGames();
+  public void ensureGameExists(long id) {
+    Optional<Game> byId = gameRepository.findByIdOptional(id);
+    if (byId.isEmpty()) {
+      throw new NotFoundException("Game with id " + id + " was not found");
+    }
   }
 }

@@ -15,9 +15,6 @@ public class BookingRepository implements PanacheRepository<Booking> {
   @Transactional
   public void create(List<Booking> newBookings, String userId) {
     for (Booking booking : newBookings) {
-      booking.setBookingDate(LocalDate.now());
-      booking.setIsReturned(false);
-      booking.setIsCancelled(false);
       booking.setUserId(userId);
       persist(booking);
     }

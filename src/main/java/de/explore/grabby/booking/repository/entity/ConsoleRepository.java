@@ -19,10 +19,8 @@ public class ConsoleRepository implements PanacheRepository<Console> {
 
   public void updateConsole(long id, Console console) {
     Console consoleToUpdate = findById(id);
-    if (consoleToUpdate != null) {
-      consoleToUpdate.setName(console.getName());
-      consoleToUpdate.setDescription(console.getDescription());
-      persist(consoleToUpdate);
-    }
+    consoleToUpdate.setName(console.getName());
+    consoleToUpdate.setDescription(console.getDescription());
+    persist(consoleToUpdate);
   }
 }

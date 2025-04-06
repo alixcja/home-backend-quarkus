@@ -11,7 +11,7 @@ import java.util.List;
 
 @ApplicationScoped
 public class BookingService {
-  public static final int MAX_EXTENDING_DAY = 7;
+
   @Inject
   BookingRepository repository;
 

@@ -7,6 +7,7 @@ import de.explore.grabby.booking.model.entity.Game;
 import de.explore.grabby.booking.repository.entity.BookingEntityRepository;
 import de.explore.grabby.booking.rest.request.UploadForm;
 import de.explore.grabby.booking.service.BookingEntityService;
+import io.quarkus.runtime.util.StringUtil;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -24,6 +25,9 @@ import java.util.List;
 
 @Path("/entities")
 public class BookingEntityResource {
+  public static final String STATUS_ARCHIVED = "archived";
+  public static final String STATUS_UNARCHIVED = "unarchived";
+
   // TODO: Add here post endpoint?
   @Inject
   BookingEntityRepository bookingEntityRepository;
@@ -41,23 +45,30 @@ public class BookingEntityResource {
 
   @GET
   @APIResponse(responseCode = "200", description = "Got all entities")
-  public List<BookingEntity> getAllEntities() {
-    return bookingEntityRepository.listAll();
+  public List<BookingEntity> getAllEntities(@QueryParam("status") String status) {
+    if (StringUtil.isNullOrEmpty(status)) {
+      return bookingEntityRepository.listAll();
+    } else if (status.equals(STATUS_ARCHIVED)) {
+      return bookingEntityRepository.listAllArchived();
+    } else if (status.equals(STATUS_UNARCHIVED)) {
+      return bookingEntityRepository.listAllNotArchived();
+    }
+    throw new BadRequestException("Unknown status type");
   }
 
-  @RolesAllowed("${admin-role}")
-  @Path("/archived")
+  @Path("/{id}/image")
   @GET
-  @APIResponse(responseCode = "200", description = "Got all archived entities")
-  public List<BookingEntity> getAllArchivedEntities() {
-    return bookingEntityRepository.listAllArchived();
-  }
-
-  @Path("/not-archived")
-  @GET
-  @APIResponse(responseCode = "200", description = "Got all not archived entities")
-  public List<BookingEntity> getAllNotArchivedEntities() {
-    return bookingEntityRepository.listAllNotArchived();
+  @APIResponse(responseCode = "200", description = "Got image for entity with provided id")
+  @APIResponse(responseCode = "204", description = "No image found for entity with provided id")
+  @APIResponse(responseCode = "404", description = "No entity found for provided id")
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  public Response getImageForEntity(@PathParam("id") long id) {
+    ensureEntityExists(id);
+    ResponseInputStream<GetObjectResponse> response = bookingEntityService.getImageForEntity(id);
+    if (response == null) {
+      response = bookingEntityService.getDefaultEntityImage();
+    }
+    return Response.ok(response).build();
   }
 
   @RolesAllowed("${admin-role}")
@@ -93,30 +104,6 @@ public class BookingEntityResource {
     return Response.noContent().build();
   }
 
-  @Path("/image/default")
-  @GET
-  @APIResponse(responseCode = "200", description = "Got default image")
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  public Response getDefaultImage() {
-    ResponseInputStream<GetObjectResponse> response = bookingEntityService.getDefaultEntityImage();
-    return Response.ok(response).build();
-  }
-
-  @Path("/{id}/image")
-  @GET
-  @APIResponse(responseCode = "200", description = "Got image for entity with provided id")
-  @APIResponse(responseCode = "204", description = "No image found for entity with provided id")
-  @APIResponse(responseCode = "404", description = "No entity found for provided id")
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  public Response getImageForEntity(@PathParam("id") long id) {
-    ensureEntityExists(id);
-    ResponseInputStream<GetObjectResponse> response = bookingEntityService.getImageForEntity(id);
-    if (response == null) {
-      response = bookingEntityService.getDefaultEntityImage();
-    }
-    return Response.ok(response).build();
-  }
-
   @RolesAllowed("${admin-role}")
   @Path("/{id}/image")
   @PUT
@@ -128,10 +115,6 @@ public class BookingEntityResource {
     ensureEntityExists(id);
     bookingEntityService.uploadImageForEntity(id, uploadForm);
     return Response.status(HttpStatus.SC_CREATED).build();
-  }
-
-  private void ensureEntityExists(Long id) {
-    bookingEntityRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
   @RolesAllowed("${admin-role}")
@@ -157,5 +140,9 @@ public class BookingEntityResource {
     ConsoleAccessory consoleAccessory = new ConsoleAccessory("Joycons", "blau-gelb", nintendoSwitch);
 
     bookingEntityRepository.persist(game1, game2, console, consoleAccessory);
+  }
+
+  private void ensureEntityExists(Long id) {
+    bookingEntityRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 }
