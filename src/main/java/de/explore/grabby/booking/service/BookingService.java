@@ -28,7 +28,6 @@ public class BookingService {
 
   private boolean ensureEntityIsAvailable(long bookingId, BookingEntity entity, LocalDate endDate, LocalDate requestedEndDate) {
     List<Booking> bookingsWithRequestedEntity = repository.findAllBookingsByEntityAndByStartDateAfterRequestedDate(bookingId, entity, requestedEndDate, endDate);
-
     return bookingsWithRequestedEntity.isEmpty();
   }
 }

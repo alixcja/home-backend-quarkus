@@ -10,7 +10,7 @@ public class Favorite {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FAVORITE_SEQ")
     @SequenceGenerator(name = "FAVORITE_SEQ", sequenceName = "FAVORITE_TABLE_SEQ", allocationSize = 1)
     @Column(name = "id")
-    private int favoriteId;
+    private int id;
 
     @Column(name = "user_id")
     private String userId;
@@ -27,12 +27,12 @@ public class Favorite {
         this.favorite = favorite;
     }
 
-    public int getFavoriteId() {
-        return favoriteId;
+    public int getId() {
+        return id;
     }
 
-    public void setFavoriteId(int favoriteId) {
-        this.favoriteId = favoriteId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getUserId() {

@@ -8,6 +8,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
@@ -15,6 +17,8 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 public class BookingEntityService {
 
   public static final String DEFAULT_ENTITY_IMAGE_PNG = "default-entity-image.png";
+
+  private static final Logger LOG = LoggerFactory.getLogger(BookingEntityService.class);
 
   @Inject
   FileService fileService;
@@ -33,6 +37,7 @@ public class BookingEntityService {
 
     bookingEntity.setImage(image);
     bookingEntityRepository.persist(bookingEntity);
+    LOG.info("Image was uploaded for entity with id {}", id);
   }
 
   private Image createImageObject(String filename) {

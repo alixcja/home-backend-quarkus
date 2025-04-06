@@ -6,6 +6,8 @@ import de.explore.grabby.booking.repository.BookingRepository;
 import de.explore.grabby.booking.repository.entity.BookingEntityRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
 @ApplicationScoped
 public class NewsService {
 
+  private static final Logger LOG = LoggerFactory.getLogger(NewsService.class);
   @Inject
   BookingRepository bookingRepository;
 
@@ -27,6 +30,7 @@ public class NewsService {
     allCurrentNews.addAll(fetchSoonOverdueBookings(identifier));
     allCurrentNews.addAll(fetchOverdueBookings(identifier));
 
+    LOG.info("Found {} news for user with subject {}", allCurrentNews.size(), identifier);
     return allCurrentNews;
   }
 

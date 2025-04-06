@@ -5,6 +5,8 @@ import de.explore.grabby.booking.model.entity.BookingEntity;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,12 +14,15 @@ import java.util.List;
 @ApplicationScoped
 public class BookingRepository implements PanacheRepository<Booking> {
 
+  private static final Logger LOG = LoggerFactory.getLogger(BookingRepository.class);
+
   @Transactional
-  public void create(List<Booking> newBookings, String userId) {
-    for (Booking booking : newBookings) {
+  public void create(List<Booking> bookings, String userId) {
+    for (Booking booking : bookings) {
       booking.setUserId(userId);
       persist(booking);
     }
+    LOG.info("User {} successfully created {} bookings", userId, bookings.size());
   }
 
   @Transactional
@@ -25,6 +30,7 @@ public class BookingRepository implements PanacheRepository<Booking> {
     Booking bookingToCancel = findById(id);
     bookingToCancel.setIsCancelled(true);
     persist(bookingToCancel);
+    LOG.info("Booking with id {} was cancelled successfully", id);
   }
 
   @Transactional
@@ -32,6 +38,7 @@ public class BookingRepository implements PanacheRepository<Booking> {
     Booking bookingToReturn = findById(id);
     bookingToReturn.setIsReturned(true);
     persist(bookingToReturn);
+    LOG.info("Booking with id {} was returned successfully", id);
   }
 
   @Transactional
@@ -39,6 +46,7 @@ public class BookingRepository implements PanacheRepository<Booking> {
     Booking requestedBooking = findById(id);
     requestedBooking.setEndDate(requestedDate);
     persist(requestedBooking);
+    LOG.info("Booking with id {} was extended successfully", id);
   }
 
   public List<Booking> findAllBookingsByEntityAndByStartDateAfterRequestedDate(long id, BookingEntity entity, LocalDate requestedDate, LocalDate endDate) {

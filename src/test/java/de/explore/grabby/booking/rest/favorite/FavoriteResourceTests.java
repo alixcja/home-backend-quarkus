@@ -90,7 +90,7 @@ class FavoriteResourceTests {
   void shouldDeleteFavoriteById() {
     given()
             .when()
-            .pathParams("id", favorite1.getFavoriteId())
+            .pathParams("id", favorite1.getId())
             .delete("/{id}")
             .then()
             .statusCode(SC_NO_CONTENT);
