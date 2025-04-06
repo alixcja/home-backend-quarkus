@@ -17,13 +17,20 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.apache.http.HttpStatus;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import java.util.List;
 
 @Path("/entities")
+@Tag(name = "Booking Entities", description = "Operations related to booking entities")
 public class BookingEntityResource {
   public static final String STATUS_ARCHIVED = "archived";
   public static final String STATUS_UNARCHIVED = "unarchived";
@@ -37,14 +44,22 @@ public class BookingEntityResource {
 
   @Path("/{id}")
   @GET
-  @APIResponse(responseCode = "200", description = "Found entity by id")
-  @APIResponse(responseCode = "404", description = "No entity found for provided id")
+  @Operation(summary = "Find booking entity by ID", description = "Returns the booking entity associated with the provided ID")
+  @APIResponses({
+          @APIResponse(responseCode = "200", description = "Found entity by id",
+                  content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookingEntity.class))),
+          @APIResponse(responseCode = "404", description = "No entity found for provided id")
+  })
+  @Parameter(name = "id", description = "ID of the booking entity", required = true)
   public BookingEntity findById(@PathParam("id") long id) {
     return bookingEntityRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
   @GET
-  @APIResponse(responseCode = "200", description = "Got all entities")
+  @Operation(summary = "Get all booking entities", description = "Returns a list of all booking entities. Can filter by status.")
+  @APIResponse(responseCode = "200", description = "Got all entities",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookingEntity[].class)))
+  @Parameter(name = "status", description = "Status filter for entities (archived or unarchived)")
   public List<BookingEntity> getAllEntities(@QueryParam("status") String status) {
     if (StringUtil.isNullOrEmpty(status)) {
       return bookingEntityRepository.listAll();
@@ -58,9 +73,13 @@ public class BookingEntityResource {
 
   @Path("/{id}/image")
   @GET
-  @APIResponse(responseCode = "200", description = "Got image for entity with provided id")
-  @APIResponse(responseCode = "204", description = "No image found for entity with provided id")
-  @APIResponse(responseCode = "404", description = "No entity found for provided id")
+  @Operation(summary = "Get image for entity", description = "Returns the image associated with the booking entity by ID")
+  @APIResponses({
+          @APIResponse(responseCode = "200", description = "Got image for entity with provided id",
+                  content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM)),
+          @APIResponse(responseCode = "404", description = "No entity found for provided id")
+  })
+  @Parameter(name = "id", description = "ID of the booking entity to fetch image", required = true)
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   public Response getImageForEntity(@PathParam("id") long id) {
     ensureEntityExists(id);
@@ -73,8 +92,13 @@ public class BookingEntityResource {
 
   @RolesAllowed("${admin-role}")
   @POST
-  @APIResponse(responseCode = "201", description = "Entity was created")
-  @APIResponse(responseCode = "400", description = "Invalid input")
+  @Operation(summary = "Create a new booking entity", description = "Create a new booking entity with the provided details")
+  @APIResponses({
+          @APIResponse(responseCode = "201", description = "Entity was created",
+                  content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookingEntity.class))),
+          @APIResponse(responseCode = "400", description = "Invalid input")
+  })
+  @Parameter(name = "entity", description = "Booking entity to be created", required = true)
   public Response persistEntity(@Valid @NotNull BookingEntity entity) {
     bookingEntityRepository.persist(entity);
     return Response.status(201).build();
@@ -83,9 +107,13 @@ public class BookingEntityResource {
   @RolesAllowed("${admin-role}")
   @Path("/{id}/archive")
   @PUT
-  @APIResponse(responseCode = "204", description = "Archived entity by id")
-  @APIResponse(responseCode = "404", description = "No entity found for provided id")
+  @Operation(summary = "Archive a booking entity", description = "Archives the booking entity with the provided ID")
+  @APIResponses({
+          @APIResponse(responseCode = "204", description = "Archived entity by id"),
+          @APIResponse(responseCode = "404", description = "No entity found for provided id")
+  })
   @Produces(MediaType.APPLICATION_JSON)
+  @Parameter(name = "id", description = "ID of the booking entity to be archived", required = true)
   public Response archiveEntity(@PathParam("id") long id) {
     ensureEntityExists(id);
     bookingEntityRepository.archiveEntityById(id);
@@ -95,9 +123,13 @@ public class BookingEntityResource {
   @RolesAllowed("${admin-role}")
   @Path("/{id}/unarchive")
   @PUT
-  @APIResponse(responseCode = "204", description = "Archived entity by id")
-  @APIResponse(responseCode = "404", description = "No entity found for provided id")
+  @Operation(summary = "Unarchive a booking entity", description = "Unarchives the booking entity with the provided ID")
+  @APIResponses({
+          @APIResponse(responseCode = "204", description = "Unarchived entity by id"),
+          @APIResponse(responseCode = "404", description = "No entity found for provided id")
+  })
   @Produces(MediaType.APPLICATION_JSON)
+  @Parameter(name = "id", description = "ID of the booking entity to be unarchived", required = true)
   public Response unarchiveEntity(@PathParam("id") long id) {
     ensureEntityExists(id);
     bookingEntityRepository.unarchiveEntityById(id);
@@ -107,19 +139,27 @@ public class BookingEntityResource {
   @RolesAllowed("${admin-role}")
   @Path("/{id}/image")
   @PUT
-  @APIResponse(responseCode = "200", description = "Uploaded image for entity with provided id")
-  @APIResponse(responseCode = "400", description = "File is empty")
-  @APIResponse(responseCode = "404", description = "No entity found for provided id")
+  @Operation(summary = "Upload image for a booking entity", description = "Uploads an image for the booking entity with the provided ID")
+  @APIResponses({
+          @APIResponse(responseCode = "200", description = "Uploaded image for entity with provided id"),
+          @APIResponse(responseCode = "400", description = "File is empty"),
+          @APIResponse(responseCode = "404", description = "No entity found for provided id")
+  })
   @Consumes(MediaType.MULTIPART_FORM_DATA)
+  @Parameter(name = "id", description = "ID of the booking entity to upload the image for", required = true)
+  @Parameter(name = "uploadForm", description = "The file upload form with the image", required = true)
   public Response uploadImageForEntity(@PathParam("id") long id, @Valid @NotNull UploadForm uploadForm) {
     ensureEntityExists(id);
     bookingEntityService.uploadImageForEntity(id, uploadForm);
     return Response.status(HttpStatus.SC_CREATED).build();
   }
 
+
   @RolesAllowed("${admin-role}")
   @POST
   @Path("/testdata")
+  @Operation(summary = "Create test data for booking entities", description = "Generates test data for booking entities")
+  @APIResponse(responseCode = "204", description = "Test data created successfully")
   public void createTestBookingEntities() {
     createTestData();
   }
