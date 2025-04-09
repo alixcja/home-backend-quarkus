@@ -153,7 +153,7 @@ class BookingResourceTests {
     given()
             .when()
             .pathParams("id", booking2.getId())
-            .put("/cancel/{id}")
+            .put("/{id}/cancel")
             .then()
             .statusCode(SC_NO_CONTENT);
   }
@@ -163,7 +163,7 @@ class BookingResourceTests {
     given()
             .when()
             .pathParams("id", booking7.getId())
-            .put("/return/{id}")
+            .put("/{id}/return")
             .then()
             .statusCode(SC_NO_CONTENT);
   }
@@ -174,7 +174,7 @@ class BookingResourceTests {
             .when()
             .pathParams("id", booking1.getId())
             .body(2)
-            .put("/extend/{id}")
+            .put("/{id}/extend")
             .then()
             .statusCode(SC_NO_CONTENT);
   }
@@ -186,7 +186,7 @@ class BookingResourceTests {
             .when()
             .pathParams("id", booking1.getId())
             .body(2)
-            .put("/extend/{id}")
+            .put("/{id}/extend")
             .then()
             .statusCode(SC_BAD_REQUEST);
   }
@@ -203,7 +203,7 @@ class BookingResourceTests {
             .when()
             .pathParams("id", booking1.getId())
             .body(9)
-            .put("/extend/{id}")
+            .put("/{id}/extend")
             .then()
             .statusCode(SC_BAD_REQUEST);
   }

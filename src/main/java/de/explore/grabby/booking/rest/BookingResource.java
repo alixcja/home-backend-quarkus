@@ -93,7 +93,7 @@ public class BookingResource {
   }
 
   @PUT
-  @Path("/cancel/{id}")
+  @Path("/{id}/cancel")
   @Operation(summary = "Cancel booking", description = "Cancels a booking if it hasn’t started yet.")
   @APIResponses({
           @APIResponse(responseCode = "204", description = "Booking cancelled successfully"),
@@ -107,7 +107,7 @@ public class BookingResource {
     return Response.status(NO_CONTENT).build();
   }
 
-  @Path("/return/{id}")
+  @Path("/{id}/return")
   @PUT
   @APIResponse(responseCode = "204", description = "Successfully cancelled booking")
   @APIResponse(responseCode = "400", description = "Booking is not active")
@@ -120,7 +120,7 @@ public class BookingResource {
   }
 
   @PUT
-  @Path("/extend/{id}")
+  @Path("/{id}/extend")
   @Operation(summary = "Extend booking", description = "Extends a booking by a given number of days (up to 7).")
   @Parameter(name = "requestedDays", description = "Number of days to extend (max 7)", required = true)
   @APIResponses({
