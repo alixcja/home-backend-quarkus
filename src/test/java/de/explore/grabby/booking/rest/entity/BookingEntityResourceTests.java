@@ -94,8 +94,9 @@ public class BookingEntityResourceTests {
   @Test
   void shouldGetAllNotArchivedEntities() {
     given()
+            .queryParam("status", "unarchived")
             .when()
-            .get("/not-archived")
+            .get()
             .then()
             .statusCode(SC_OK)
             .body("size()", is(2));
@@ -104,8 +105,9 @@ public class BookingEntityResourceTests {
   @Test
   void shouldGetAllArchivedEntities() {
     given()
+            .queryParam("status", "archived")
             .when()
-            .get("/archived")
+            .get()
             .then()
             .statusCode(SC_OK)
             .body("size()", is(1));
