@@ -19,8 +19,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.List;
-
-import static de.explore.grabby.lunch.util.ShopUtils.ensureShopByIdExists;
+import java.util.Optional;
 
 @Path("/shops")
 @Tag(name = "Shops", description = "Operations related to shops")
@@ -88,5 +87,12 @@ public class ShopResource {
     ensureShopByIdExists(id);
     Shop updated = shopRepository.put(id, updatedShop);
     return Response.ok(updated).build();
+  }
+
+  private void ensureShopByIdExists(long id) {
+    Optional<Shop> byIdOptional = shopRepository.findByIdOptional(id);
+    if (byIdOptional.isEmpty()) {
+      throw new NotFoundException("Could not find shop by id " + id);
+    }
   }
 }

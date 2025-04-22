@@ -2,15 +2,18 @@ package de.explore.grabby.lunch.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Menucard extends PanacheEntity {
+public class MenuCard extends PanacheEntity {
 
   private int number;
   private String fileName;
+
+  @ManyToOne
   private Shop shop;
 
-  public Menucard() {
+  public MenuCard() {
   }
 
   public int getNumber() {
