@@ -1,5 +1,6 @@
 package de.explore.grabby.lunch.model;
 
+import de.explore.grabby.booking.model.entity.embedded.Image;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -30,6 +31,8 @@ public class Shop extends PanacheEntity {
 
   @Column(name = "is_archived")
   private Boolean isArchived = false;
+
+  private Image image;
 
   public Shop() {
   }
@@ -84,5 +87,13 @@ public class Shop extends PanacheEntity {
 
   public void setArchived(Boolean archived) {
     isArchived = archived;
+  }
+
+  public Image getImage() {
+    return image;
+  }
+
+  public void setImage(Image image) {
+    this.image = image;
   }
 }
