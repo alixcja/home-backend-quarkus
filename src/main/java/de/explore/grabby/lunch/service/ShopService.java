@@ -5,6 +5,7 @@ import de.explore.grabby.booking.model.entity.embedded.Image;
 import de.explore.grabby.lunch.model.Shop;
 import de.explore.grabby.lunch.repository.ShopRepository;
 import de.explore.grabby.lunch.rest.request.UploadForm;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
+@ApplicationScoped
 public class ShopService {
 
   public static final String DEFAULT_SHOP_IMAGE_PNG = "default-shop-image.png";
