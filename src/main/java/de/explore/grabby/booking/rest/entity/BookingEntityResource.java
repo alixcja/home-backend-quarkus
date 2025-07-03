@@ -5,7 +5,7 @@ import de.explore.grabby.booking.model.entity.Console;
 import de.explore.grabby.booking.model.entity.ConsoleAccessory;
 import de.explore.grabby.booking.model.entity.Game;
 import de.explore.grabby.booking.repository.entity.BookingEntityRepository;
-import de.explore.grabby.booking.rest.request.UploadForm;
+import de.explore.grabby.booking.rest.request.EntityUploadForm;
 import de.explore.grabby.booking.service.BookingEntityService;
 import io.quarkus.runtime.util.StringUtil;
 import jakarta.annotation.security.RolesAllowed;
@@ -148,7 +148,7 @@ public class BookingEntityResource {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Parameter(name = "id", description = "ID of the booking entity to upload the image for", required = true)
   @Parameter(name = "uploadForm", description = "The file upload form with the image", required = true)
-  public Response uploadImageForEntity(@PathParam("id") long id, @Valid @NotNull UploadForm uploadForm) {
+  public Response uploadImageForEntity(@PathParam("id") long id, @Valid @NotNull EntityUploadForm uploadForm) {
     ensureEntityExists(id);
     bookingEntityService.uploadImageForEntity(id, uploadForm);
     return Response.status(HttpStatus.SC_CREATED).build();

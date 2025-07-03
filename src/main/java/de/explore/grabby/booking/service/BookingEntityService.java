@@ -3,7 +3,8 @@ package de.explore.grabby.booking.service;
 import de.explore.grabby.booking.model.entity.BookingEntity;
 import de.explore.grabby.booking.model.entity.embedded.Image;
 import de.explore.grabby.booking.repository.entity.BookingEntityRepository;
-import de.explore.grabby.booking.rest.request.UploadForm;
+import de.explore.grabby.booking.rest.request.EntityUploadForm;
+import de.explore.grabby.fileservice.FileService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -26,11 +27,11 @@ public class BookingEntityService {
   @Inject
   BookingEntityRepository bookingEntityRepository;
 
-  @ConfigProperty(name = "bucket.name")
+  @ConfigProperty(name = "entity.bucket.name")
   String bucket;
 
   @Transactional
-  public void uploadImageForEntity(Long id, UploadForm form) {
+  public void uploadImageForEntity(Long id, EntityUploadForm form) {
     BookingEntity bookingEntity = bookingEntityRepository.findByIdOptional(id).orElseThrow();
     String filename = fileService.uploadImage(bucket, form);
     Image image = createImageObject(filename);

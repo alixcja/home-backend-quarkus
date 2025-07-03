@@ -1,6 +1,7 @@
-package de.explore.grabby.booking.service;
+package de.explore.grabby.fileservice;
 
-import de.explore.grabby.booking.rest.request.UploadForm;
+import de.explore.grabby.booking.rest.request.EntityUploadForm;
+import de.explore.grabby.lunch.rest.request.MenuUploadForm;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
@@ -14,6 +15,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.File;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -23,18 +25,25 @@ public class FileService {
   @Inject
   S3Client s3;
 
-  public String uploadImage(String bucket, UploadForm uploadForm) {
+  public String uploadImage(String bucket, EntityUploadForm uploadForm) {
     ensureBucketExists(bucket);
     String fileName = UUID.randomUUID().toString();
-    createRequestAndUploadImage(bucket, uploadForm, fileName);
+    createRequestAndUploadImage(bucket, uploadForm.file, fileName);
     return fileName;
   }
 
-  private void createRequestAndUploadImage(String bucket, UploadForm uploadForm, String fileName) {
+  public String uploadImage(String bucket, MenuUploadForm uploadForm) {
+    ensureBucketExists(bucket);
+    String fileName = UUID.randomUUID().toString();
+    createRequestAndUploadImage(bucket, uploadForm.file, fileName);
+    return fileName;
+  }
+
+  private void createRequestAndUploadImage(String bucket, File file, String fileName) {
     PutObjectRequest putObjectRequest = createPutObjectRequest(bucket, fileName);
     LOG.info("Uploading file {} to bucket {}", bucket, fileName);
     s3.putObject(putObjectRequest, RequestBody
-            .fromFile(uploadForm.file));
+            .fromFile(file));
   }
 
   private PutObjectRequest createPutObjectRequest(String bucket, String fileName) {

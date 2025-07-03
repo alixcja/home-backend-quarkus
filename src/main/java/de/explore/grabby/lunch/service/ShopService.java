@@ -1,10 +1,10 @@
 package de.explore.grabby.lunch.service;
 
-
 import de.explore.grabby.booking.model.entity.embedded.Image;
+import de.explore.grabby.fileservice.FileService;
 import de.explore.grabby.lunch.model.Shop;
 import de.explore.grabby.lunch.repository.ShopRepository;
-import de.explore.grabby.lunch.rest.request.UploadForm;
+import de.explore.grabby.lunch.rest.request.MenuUploadForm;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -27,11 +27,11 @@ public class ShopService {
   @Inject
   ShopRepository shopRepository;
 
-  @ConfigProperty(name = "bucket.name")
+  @ConfigProperty(name = "shop.bucket.name")
   String bucket;
 
   @Transactional
-  public void uploadImageForEntity(Long id, UploadForm form) {
+  public void uploadImageForEntity(Long id, MenuUploadForm form) {
     Shop shop = shopRepository.findByIdOptional(id).orElseThrow();
     String filename = fileService.uploadImage(bucket, form);
     Image image = createImageObject(filename);

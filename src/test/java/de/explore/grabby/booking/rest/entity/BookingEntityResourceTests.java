@@ -3,7 +3,7 @@ package de.explore.grabby.booking.rest.entity;
 import de.explore.grabby.booking.model.entity.BookingEntity;
 import de.explore.grabby.booking.model.entity.Game;
 import de.explore.grabby.booking.repository.entity.BookingEntityRepository;
-import de.explore.grabby.booking.rest.request.UploadForm;
+import de.explore.grabby.booking.rest.request.EntityUploadForm;
 import de.explore.grabby.booking.service.BookingEntityService;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
@@ -170,7 +170,7 @@ public class BookingEntityResourceTests {
   @Disabled("Disabled until I found a way to start a dev minio")
   void shouldReturnImageOfGame() throws IOException {
     File image = File.createTempFile("tmp", ".png");
-    UploadForm uploadForm = new UploadForm();
+    EntityUploadForm uploadForm = new EntityUploadForm();
     uploadForm.file = image;
     service.uploadImageForEntity(game1.getId(), uploadForm);
     assertNotNull(repository.findById(game1.getId()).getImage());

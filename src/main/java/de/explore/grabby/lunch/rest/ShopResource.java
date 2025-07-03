@@ -2,7 +2,7 @@ package de.explore.grabby.lunch.rest;
 
 import de.explore.grabby.lunch.model.Shop;
 import de.explore.grabby.lunch.repository.ShopRepository;
-import de.explore.grabby.lunch.rest.request.UploadForm;
+import de.explore.grabby.lunch.rest.request.MenuUploadForm;
 import de.explore.grabby.lunch.service.ShopService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -47,6 +47,7 @@ public class ShopResource {
   })
   public Response getShopByID(@PathParam("id") long id) {
     Shop byId = shopRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
+    byId.computeMenuCardCount();
     return Response.ok(byId).build();
   }
 
@@ -58,7 +59,9 @@ public class ShopResource {
                   content = @Content(schema = @Schema(implementation = Shop[].class)))
   })
   public List<Shop> getShops() {
-    return shopRepository.listAll();
+    return shopRepository.listAll().stream()
+            .peek(Shop::computeMenuCardCount)
+            .toList();
   }
 
   @Transactional
@@ -73,7 +76,7 @@ public class ShopResource {
           @APIResponse(responseCode = "400", description = "Invalid input")
   })
   @Parameter(name = "entity", description = "Shop entity to be created", required = true)
-  public Response persistEntity(@Valid @NotNull Shop shop) {
+  public Response persistShop(@Valid @NotNull Shop shop) {
     shopRepository.persist(shop);
     return Response.status(Response.Status.CREATED)
             .entity(shop)
@@ -128,7 +131,7 @@ public class ShopResource {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Parameter(name = "id", description = "ID of the booking entity to upload the image for", required = true)
   @Parameter(name = "uploadForm", description = "The file upload form with the image", required = true)
-  public Response uploadImageForEntity(@PathParam("id") long id, @Valid @NotNull UploadForm uploadForm) {
+  public Response uploadImageForEntity(@PathParam("id") long id, @Valid @NotNull MenuUploadForm uploadForm) {
     ensureShopByIdExists(id);
     shopService.uploadImageForEntity(id, uploadForm);
     return Response.status(HttpStatus.SC_CREATED).build();

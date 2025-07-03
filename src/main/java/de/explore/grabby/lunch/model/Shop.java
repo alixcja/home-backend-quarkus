@@ -34,6 +34,9 @@ public class Shop extends PanacheEntity {
 
   private Image image;
 
+  @Transient
+  public int menuCardCount;
+
   public Shop() {
   }
 
@@ -95,5 +98,9 @@ public class Shop extends PanacheEntity {
 
   public void setImage(Image image) {
     this.image = image;
+  }
+
+  public void computeMenuCardCount() {
+    this.menuCardCount = (int) MenuCard.count("shop", this);
   }
 }
