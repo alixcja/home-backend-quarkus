@@ -64,6 +64,12 @@ public class MenuCardResource {
     menucardRepository.handleMenuCard(shopId, menuCard);
   }
 
+  @DELETE
+  public void deleteAllMenuCardsForShop(@PathParam("id") Long shopId) {
+    ensureShopByIdExists(shopId);
+    menucardRepository.deleteMenuCardsByShop(shopId);
+  }
+
   private void ensureShopByIdExists(long id) {
     Optional<Shop> byIdOptional = shopRepository.findByIdOptional(id);
     if (byIdOptional.isEmpty()) {

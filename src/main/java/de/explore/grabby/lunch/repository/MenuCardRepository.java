@@ -9,6 +9,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -24,15 +26,10 @@ public class MenuCardRepository implements PanacheRepository<MenuCard> {
   @ConfigProperty(name = "menuCard.bucket.name")
   String bucket;
 
+  private static final Logger LOG = LoggerFactory.getLogger(MenuCardRepository.class);
+
   public void handleMenuCard(Long shopId, MenuUploadForm newMenuCard) {
-    Optional<MenuCard> optionalMenuCard = findByNumberOptional(newMenuCard.number);
-    if (optionalMenuCard.isPresent()) {
-      // TODO: Remove old one - if new menuCardSize is smaller then old ones - old ones needs to be deleted too
-      String fileName = upload(newMenuCard);
-      updateFileName(newMenuCard.number, fileName);
-    } else {
       uploadAndPersist(shopId, newMenuCard);
-    }
   }
 
   private Optional<MenuCard> findByNumberOptional(int number) {
@@ -69,5 +66,12 @@ public class MenuCardRepository implements PanacheRepository<MenuCard> {
 
   public Optional<MenuCard> findByShopAndNumber(Long id, Long number) {
     return find("shop.id = ?1 and number = ?2", id, number).list().stream().findFirst();
+  }
+
+  @Transactional
+  public void deleteMenuCardsByShop(Long shopId) {
+    int count = find("shop.id = ?1", shopId).list().size();
+    LOG.info("Found {} of shop with id {} which will be deleted", count, shopId);
+    delete("shop.id = ?1", shopId);
   }
 }
