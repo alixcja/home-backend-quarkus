@@ -2,6 +2,7 @@ package de.explore.grabby.booking.rest.entity;
 
 import de.explore.grabby.booking.model.entity.ConsoleAccessory;
 import de.explore.grabby.booking.repository.entity.ConsoleAccessoryRepository;
+import io.quarkus.runtime.util.StringUtil;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -21,6 +22,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.util.List;
 import java.util.Optional;
 
+import static de.explore.grabby.booking.rest.entity.BookingEntityStatus.STATUS_ARCHIVED;
+import static de.explore.grabby.booking.rest.entity.BookingEntityStatus.STATUS_UNARCHIVED;
+
 @Path("/accessories")
 @Tag(name = "Console Accessory", description = "Operations related to console accessories")
 public class ConsoleAccessoryResource {
@@ -33,8 +37,15 @@ public class ConsoleAccessoryResource {
   @Operation(summary = "Get all console accessories", description = "Returns a list of all console accessories")
   @APIResponse(responseCode = "200", description = "Successfully retrieved all console accessories",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConsoleAccessory[].class)))
-  public List<ConsoleAccessory> getAllConsoleAccessories() {
-    return consoleAccessoryRepository.getAllConsoleAccessories();
+  public List<ConsoleAccessory> getAllConsoleAccessories(@QueryParam("status") String status) {
+    if (StringUtil.isNullOrEmpty(status)) {
+      return consoleAccessoryRepository.listAll();
+    } else if (status.equals(STATUS_ARCHIVED.label)) {
+      return consoleAccessoryRepository.listAllArchived();
+    } else if (status.equals(STATUS_UNARCHIVED.label)) {
+      return consoleAccessoryRepository.listAllNotArchived();
+    }
+    throw new BadRequestException("Unknown status type");
   }
 
   @RolesAllowed("${admin-role}")

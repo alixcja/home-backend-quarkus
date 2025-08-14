@@ -31,4 +31,12 @@ public class GameRepository implements PanacheRepository<Game> {
     persist(gameToUpdate);
     LOG.info("Entity with id {} was updated", id);
   }
+
+  public List<Game> listAllArchived() {
+    return find("isArchived is true").list();
+  }
+
+  public List<Game> listAllNotArchived() {
+    return find("isArchived is false").list();
+  }
 }

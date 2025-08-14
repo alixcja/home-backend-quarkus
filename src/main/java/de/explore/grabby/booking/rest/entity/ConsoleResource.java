@@ -2,6 +2,7 @@ package de.explore.grabby.booking.rest.entity;
 
 import de.explore.grabby.booking.model.entity.Console;
 import de.explore.grabby.booking.repository.entity.ConsoleRepository;
+import io.quarkus.runtime.util.StringUtil;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -21,6 +22,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.util.List;
 import java.util.Optional;
 
+import static de.explore.grabby.booking.rest.entity.BookingEntityStatus.STATUS_ARCHIVED;
+import static de.explore.grabby.booking.rest.entity.BookingEntityStatus.STATUS_UNARCHIVED;
+
 @Path("/consoles")
 @Tag(name = "Console", description = "Operations related to game consoles")
 public class ConsoleResource {
@@ -33,9 +37,15 @@ public class ConsoleResource {
     @Operation(summary = "Get all consoles", description = "Returns a list of all game consoles")
     @APIResponse(responseCode = "200", description = "Successfully retrieved all consoles",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Console.class)))
-    public List<Console> getAllConsoles() {
-        return consoleRepository.getAllConsoles();
-    }
+    public List<Console> getAllConsoles(@QueryParam("status") String status) {
+        if (StringUtil.isNullOrEmpty(status)) {
+            return consoleRepository.listAll();
+        } else if (status.equals(STATUS_ARCHIVED.label)) {
+            return consoleRepository.listAllArchived();
+        } else if (status.equals(STATUS_UNARCHIVED.label)) {
+            return consoleRepository.listAllNotArchived();
+        }
+        throw new BadRequestException("Unknown status type");    }
 
     @RolesAllowed("${admin-role}")
     @POST

@@ -2,6 +2,7 @@ package de.explore.grabby.booking.rest.entity;
 
 import de.explore.grabby.booking.model.entity.Game;
 import de.explore.grabby.booking.repository.entity.GameRepository;
+import io.quarkus.runtime.util.StringUtil;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -21,6 +22,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.util.List;
 import java.util.Optional;
 
+import static de.explore.grabby.booking.rest.entity.BookingEntityStatus.STATUS_ARCHIVED;
+import static de.explore.grabby.booking.rest.entity.BookingEntityStatus.STATUS_UNARCHIVED;
+
 @Path("/games")
 @Tag(name = "Game", description = "Operations related to video games")
 public class GameResource {
@@ -33,8 +37,15 @@ public class GameResource {
   @Operation(summary = "Get all games", description = "Returns a list of all games")
   @APIResponse(responseCode = "200", description = "Successfully retrieved all games",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = Game[].class)))
-  public List<Game> getAllGames() {
-    return gameRepository.getAllGames();
+  public List<Game> getAllGames(@QueryParam("status") String status) {
+    if (StringUtil.isNullOrEmpty(status)) {
+      return gameRepository.listAll();
+    } else if (status.equals(STATUS_ARCHIVED.label)) {
+      return gameRepository.listAllArchived();
+    } else if (status.equals(STATUS_UNARCHIVED.label)) {
+      return gameRepository.listAllNotArchived();
+    }
+    throw new BadRequestException("Unknown status type");
   }
 
   @RolesAllowed("${admin-role}")

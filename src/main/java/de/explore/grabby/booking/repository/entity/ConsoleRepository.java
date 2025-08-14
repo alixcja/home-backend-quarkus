@@ -28,6 +28,13 @@ public class ConsoleRepository implements PanacheRepository<Console> {
     consoleToUpdate.setDescription(console.getDescription());
     persist(consoleToUpdate);
     LOG.info("Entity with id {} was updated", console.getId());
+  }
 
+  public List<Console> listAllArchived() {
+    return find("isArchived is true").list();
+  }
+
+  public List<Console> listAllNotArchived() {
+    return find("isArchived is false").list();
   }
 }

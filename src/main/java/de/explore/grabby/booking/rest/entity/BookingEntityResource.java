@@ -29,11 +29,12 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import java.util.List;
 
+import static de.explore.grabby.booking.rest.entity.BookingEntityStatus.STATUS_ARCHIVED;
+import static de.explore.grabby.booking.rest.entity.BookingEntityStatus.STATUS_UNARCHIVED;
+
 @Path("/entities")
 @Tag(name = "Booking Entities", description = "Operations related to booking entities")
 public class BookingEntityResource {
-  public static final String STATUS_ARCHIVED = "archived";
-  public static final String STATUS_UNARCHIVED = "unarchived";
 
   // TODO: Add here post endpoint?
   @Inject
@@ -63,9 +64,9 @@ public class BookingEntityResource {
   public List<BookingEntity> getAllEntities(@QueryParam("status") String status) {
     if (StringUtil.isNullOrEmpty(status)) {
       return bookingEntityRepository.listAll();
-    } else if (status.equals(STATUS_ARCHIVED)) {
+    } else if (status.equals(STATUS_ARCHIVED.label)) {
       return bookingEntityRepository.listAllArchived();
-    } else if (status.equals(STATUS_UNARCHIVED)) {
+    } else if (status.equals(STATUS_UNARCHIVED.label)) {
       return bookingEntityRepository.listAllNotArchived();
     }
     throw new BadRequestException("Unknown status type");

@@ -29,4 +29,12 @@ public class ConsoleAccessoryRepository implements PanacheRepository<ConsoleAcce
     persist(consoleAccessoryToUpdate);
     LOG.info("Entity with id {} was updated", id);
   }
+
+  public List<ConsoleAccessory> listAllNotArchived() {
+    return find("isArchived is false").list();
+  }
+
+  public List<ConsoleAccessory> listAllArchived() {
+    return find("isArchived is true").list();
+  }
 }
