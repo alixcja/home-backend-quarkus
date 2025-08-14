@@ -7,9 +7,8 @@ import de.explore.grabby.booking.repository.entity.ConsoleAccessoryRepository;
 import de.explore.grabby.booking.repository.entity.ConsoleRepository;
 import de.explore.grabby.booking.repository.entity.GameRepository;
 import io.quarkus.runtime.LaunchMode;
-import io.quarkus.runtime.StartupEvent;
+import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -29,8 +28,9 @@ public class TestDataService {
   ConsoleAccessoryRepository consoleAccessoryRepository;
 
   @Transactional
-  public void onStart(@Observes StartupEvent ev) {
-    if (isDevMode() && dataBaseIsEmpty()) {
+  @Startup
+  public void onStart() {
+    if (isDevMode() && isDatabaseEmpty()) {
       LOG.info("Application was started in dev mode and database was empty - initializing test data");
 
       Console nintendoSwitch = new Console("Nintendo Switch", "Die Nintendo Switch ist eine Hybrid-Spielkonsole von Nintendo, die sowohl am Fernseher als auch mobil genutzt werden kann.");
@@ -50,14 +50,14 @@ public class TestDataService {
     }
   }
 
-  private boolean dataBaseIsEmpty() {
+  private boolean isDatabaseEmpty() {
     int gameSize = gameRepository.listAll().size();
     int consoleSize = consoleRepository.listAll().size();
     int consoleAccessory = consoleAccessoryRepository.listAll().size();
     return gameSize == 0 && consoleSize == 0 && consoleAccessory == 0;
   }
 
-  private static boolean isDevMode() {
+  private boolean isDevMode() {
     return LaunchMode.current().equals(LaunchMode.DEVELOPMENT);
   }
 }
