@@ -74,7 +74,7 @@ class BookingResourceTests {
             .get("/{id}")
             .then()
             .statusCode(SC_OK)
-            .body("bookingEntity.id", is(3));
+            .body("bookingEntity.id", is(7));
   }
 
   @Test
