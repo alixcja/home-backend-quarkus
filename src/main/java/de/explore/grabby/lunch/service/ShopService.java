@@ -1,7 +1,7 @@
 package de.explore.grabby.lunch.service;
 
 import de.explore.grabby.booking.model.entity.embedded.Image;
-import de.explore.grabby.fileservice.FileService;
+import de.explore.grabby.fileservice.service.FileService;
 import de.explore.grabby.lunch.model.Shop;
 import de.explore.grabby.lunch.repository.ShopRepository;
 import de.explore.grabby.lunch.rest.request.MenuUploadForm;
@@ -11,8 +11,8 @@ import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+
+import java.io.InputStream;
 
 @ApplicationScoped
 public class ShopService {
@@ -48,7 +48,7 @@ public class ShopService {
     return image;
   }
 
-  public ResponseInputStream<GetObjectResponse> getImageForEntity(long id) {
+  public InputStream getImageForEntity(long id) {
     Shop shop = shopRepository.findByIdOptional(id).orElseThrow();
     if (shop.getImage() == null) {
       return null;
@@ -56,7 +56,7 @@ public class ShopService {
     return fileService.getImage(shop.getImage().getBucket(), shop.getImage().getFilename());
   }
 
-  public ResponseInputStream<GetObjectResponse> getDefaultEntityImage() {
+  public InputStream getDefaultEntityImage() {
     return fileService.getImage(bucket, DEFAULT_SHOP_IMAGE_PNG);
   }
 }
