@@ -35,7 +35,7 @@ public class NewsService {
   }
 
   private List<News> fetchNewEntities() {
-    return bookingEntityRepository.newEntityWasAdded()
+    return bookingEntityRepository.listAllNewEntities()
             .stream()
             .map(entity
                     -> new News(NewsType.NEWS_NEW_ENTITY, entity))

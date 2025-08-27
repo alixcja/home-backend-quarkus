@@ -18,7 +18,7 @@ public class BookingEntityRepository implements PanacheRepository<BookingEntity>
 
   @Transactional
   public void archiveEntityById(long id) {
-    BookingEntity entityToArchive = findById(id);
+    BookingEntity entityToArchive = findByIdOptional(id).orElseThrow();
     entityToArchive.setIsArchived(true);
     persist(entityToArchive);
     LOG.info("Entity with id {} was archived", id);
@@ -26,7 +26,7 @@ public class BookingEntityRepository implements PanacheRepository<BookingEntity>
 
   @Transactional
   public void unarchiveEntityById(long id) {
-    BookingEntity entityToUnarchive = findById(id);
+    BookingEntity entityToUnarchive = findByIdOptional(id).orElseThrow();
     entityToUnarchive.setIsArchived(false);
     persist(entityToUnarchive);
     LOG.info("Entity with id {} was unarchived", id);
@@ -40,7 +40,7 @@ public class BookingEntityRepository implements PanacheRepository<BookingEntity>
     return find("isArchived is false").list();
   }
 
-  public List<BookingEntity> newEntityWasAdded() {
+  public List<BookingEntity> listAllNewEntities() {
     return find("addedOn >= ?1", LocalDate.now().minusDays(7)).stream().toList();
   }
 }
