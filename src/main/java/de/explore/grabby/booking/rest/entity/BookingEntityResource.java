@@ -24,9 +24,8 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
+import java.io.InputStream;
 import java.util.List;
 
 import static de.explore.grabby.booking.rest.entity.BookingEntityStatus.STATUS_ARCHIVED;
@@ -82,9 +81,10 @@ public class BookingEntityResource {
   })
   @Parameter(name = "id", description = "ID of the booking entity to fetch image", required = true)
   @Consumes(MediaType.MULTIPART_FORM_DATA)
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getImageForEntity(@PathParam("id") long id) {
     ensureEntityExists(id);
-    ResponseInputStream<GetObjectResponse> response = bookingEntityService.getImageForEntity(id);
+    InputStream response = bookingEntityService.getImageForEntity(id);
     if (response == null) {
       response = bookingEntityService.getDefaultEntityImage();
     }

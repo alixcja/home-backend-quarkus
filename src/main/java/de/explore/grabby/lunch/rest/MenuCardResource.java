@@ -15,9 +15,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
+import java.io.InputStream;
 import java.util.Optional;
 
 @Path("/shops/{id}/menucards")
@@ -44,7 +43,7 @@ public class MenuCardResource {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   public Response getMenuCardsForShopAndNumber(@PathParam("id") Long id, @PathParam("number") Long number) {
     ensureShopByIdExists(id);
-    ResponseInputStream<GetObjectResponse> response = menuCardService.getImageForMenuCard(id, number);
+    InputStream response = menuCardService.getImageForMenuCard(id, number);
     if (response == null) {
       Response.noContent().build();
     }

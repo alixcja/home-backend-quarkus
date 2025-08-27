@@ -20,9 +20,8 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,7 +111,7 @@ public class ShopResource {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   public Response getImageForEntity(@PathParam("id") long id) {
     ensureShopByIdExists(id);
-    ResponseInputStream<GetObjectResponse> response = shopService.getImageForEntity(id);
+    InputStream response = shopService.getImageForEntity(id);
     if (response == null) {
       response = shopService.getDefaultEntityImage();
     }

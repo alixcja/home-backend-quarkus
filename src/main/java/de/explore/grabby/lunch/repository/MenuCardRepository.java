@@ -1,6 +1,6 @@
 package de.explore.grabby.lunch.repository;
 
-import de.explore.grabby.fileservice.FileService;
+import de.explore.grabby.fileservice.service.FileService;
 import de.explore.grabby.lunch.model.MenuCard;
 import de.explore.grabby.lunch.model.Shop;
 import de.explore.grabby.lunch.rest.request.MenuUploadForm;
