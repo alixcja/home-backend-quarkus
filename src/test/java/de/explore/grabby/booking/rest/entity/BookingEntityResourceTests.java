@@ -15,7 +15,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.services.s3.S3Client;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -40,9 +39,6 @@ public class BookingEntityResourceTests {
 
   @Inject
   BookingEntityService service;
-
-  @Inject
-  S3Client s3;
 
   @BeforeEach
   @Transactional
