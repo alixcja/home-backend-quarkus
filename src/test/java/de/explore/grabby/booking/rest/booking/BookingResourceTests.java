@@ -4,8 +4,7 @@ import de.explore.grabby.booking.model.Booking;
 import de.explore.grabby.booking.model.entity.Console;
 import de.explore.grabby.booking.model.entity.Game;
 import de.explore.grabby.booking.repository.BookingRepository;
-import de.explore.grabby.booking.repository.entity.ConsoleRepository;
-import de.explore.grabby.booking.repository.entity.GameRepository;
+import de.explore.grabby.booking.repository.entity.BookingEntityRepository;
 import de.explore.grabby.booking.rest.BookingResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
@@ -20,10 +19,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.*;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 @TestHTTPEndpoint(BookingResource.class)
@@ -32,18 +33,16 @@ import static org.hamcrest.Matchers.is;
 class BookingResourceTests {
 
   private final BookingRepository bookingRepository;
-  private final GameRepository gameRepository;
-  private final ConsoleRepository consoleRepository;
+  private final BookingEntityRepository bookingEntityRepository;
   private Booking booking1;
   private Booking booking2;
   private Game game;
   private Booking booking7;
 
   @Inject
-  public BookingResourceTests(BookingRepository bookingRepository, GameRepository gameRepository, ConsoleRepository consoleRepository) {
+  public BookingResourceTests(BookingRepository bookingRepository, BookingEntityRepository bookingEntityRepository) {
     this.bookingRepository = bookingRepository;
-    this.gameRepository = gameRepository;
-    this.consoleRepository = consoleRepository;
+    this.bookingEntityRepository = bookingEntityRepository;
   }
 
   @BeforeEach
@@ -52,8 +51,7 @@ class BookingResourceTests {
     game = new Game("Let's dance!", "This is a fun dance game", "Nintendo Switch");
     Console console = new Console("Nintendo Switch", "blue-yellow");
 
-    gameRepository.persist(game);
-    consoleRepository.persist(console);
+    bookingEntityRepository.persist(game, console);
 
     booking1 = new Booking("ghi789", game, LocalDate.now(), LocalDate.now().plusDays(2));
     booking2 = new Booking("ghi789", game, LocalDate.now().plusDays(5), LocalDate.now().plusDays(10));
@@ -75,7 +73,7 @@ class BookingResourceTests {
             .pathParams("id", booking1.getId())
             .get("/{id}")
             .then()
-            .statusCode(200)
+            .statusCode(SC_OK)
             .body("bookingEntity.id", is(3));
   }
 
@@ -91,7 +89,7 @@ class BookingResourceTests {
             .when()
             .get()
             .then()
-            .statusCode(200)
+            .statusCode(SC_OK)
             .body("size()", is(4));
   }
 
@@ -108,6 +106,7 @@ class BookingResourceTests {
             .queryParam("status", "overdue")
             .get()
             .then()
+            .statusCode(SC_OK)
             .body("size()", is(1))
             .body("[0].isReturned", is(false));
   }
@@ -125,7 +124,7 @@ class BookingResourceTests {
             .queryParam("status", "upcoming")
             .get()
             .then()
-            .statusCode(200)
+            .statusCode(SC_OK)
             .body("size()", is(2));
   }
 
@@ -208,11 +207,54 @@ class BookingResourceTests {
             .statusCode(SC_BAD_REQUEST);
   }
 
+  @Test
+  @TestSecurity(user = "Hans Müller")
+  void shouldGetAllBookingsByEntityAndStartAndEndDate() {
+    given()
+            .when()
+            .queryParam("entityId", game.getId())
+            .queryParam("start", LocalDate.now().minusDays(8L).format(DateTimeFormatter.ISO_LOCAL_DATE))
+            .queryParam("end", LocalDate.now().plusDays(22L).format(DateTimeFormatter.ISO_LOCAL_DATE))
+            .get()
+            .then()
+            .statusCode(SC_OK)
+            .body("$", hasSize(3));
+  }
+
+  @Test
+  @TestSecurity(user = "Hans Müller")
+  void shouldReturnNotFoundForBookingsByEntityAndStartAndEndDateDueInvalidEntityId() {
+    given()
+            .when()
+            .queryParam("entityId",999L)
+            .queryParam("start", LocalDate.now().minusDays(8L).format(DateTimeFormatter.ISO_LOCAL_DATE))
+            .queryParam("end", LocalDate.now().plusDays(22L).format(DateTimeFormatter.ISO_LOCAL_DATE))
+            .get()
+            .then()
+            .statusCode(SC_NOT_FOUND);
+  }
+
+  // TODO: Might need to be refactored to return 204
+  @Test
+  @TestSecurity(user = "Hans Müller")
+  void shouldReturnEmptyListBecauseThereAreNoBookingsByEntityAndStartAndEndDate() {
+    given()
+            .when()
+            .queryParam("entityId", game.getId())
+            .queryParam("start", LocalDate.now().plusMonths(2L).format(DateTimeFormatter.ISO_LOCAL_DATE))
+            .queryParam("end", LocalDate.now().plusMonths(3L).format(DateTimeFormatter.ISO_LOCAL_DATE))
+            .get()
+            .then()
+            .log()
+            .all()
+            .statusCode(SC_OK)
+            .body("$", hasSize(0));
+  }
+
   @AfterEach
   @Transactional
   void tearDown() {
     bookingRepository.deleteAll();
-    gameRepository.deleteAll();
-    consoleRepository.deleteAll();
+    bookingEntityRepository.deleteAll();
   }
 }

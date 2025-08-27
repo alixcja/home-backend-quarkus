@@ -2,6 +2,7 @@ package de.explore.grabby.booking.rest;
 
 import de.explore.grabby.booking.model.Booking;
 import de.explore.grabby.booking.repository.BookingRepository;
+import de.explore.grabby.booking.repository.entity.BookingEntityRepository;
 import de.explore.grabby.booking.service.BookingService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -19,8 +20,8 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static jakarta.ws.rs.core.Response.Status.CREATED;
 import static jakarta.ws.rs.core.Response.Status.NO_CONTENT;
@@ -35,12 +36,14 @@ public class BookingResource {
   private final BookingRepository bookingRepository;
   private final BookingService service;
   private final JsonWebToken jwt;
+  private final BookingEntityRepository bookingEntityRepository;
 
   @Inject
-  public BookingResource(BookingRepository bookingRepository, BookingService service, JsonWebToken jwt) {
+  public BookingResource(BookingRepository bookingRepository, BookingService service, JsonWebToken jwt, BookingEntityRepository bookingEntityRepository) {
     this.bookingRepository = bookingRepository;
     this.service = service;
     this.jwt = jwt;
+    this.bookingEntityRepository = bookingEntityRepository;
   }
 
   // TODO: Add endpoint to adjust start- and / or enddate of a not active booking?
@@ -67,16 +70,19 @@ public class BookingResource {
           @APIResponse(responseCode = "200", description = "Bookings retrieved successfully",
                   content = @Content(schema = @Schema(implementation = Booking[].class)))
   })
-  public Response getBookings(@QueryParam("status") String status) {
-    List<Booking> bookings = new ArrayList<>();
-    if (status != null && status.equals(OVERDUE_STATUS)) {
-      bookings = bookingRepository.listAllOverdueBookings(jwt.getSubject());
-    } else if (status != null && status.equals(UPCOMING_STATUS)) {
-      bookings = bookingRepository.listAllCurrentAndInFutureBookings(jwt.getSubject());
+  public List<Booking> getBookings(@QueryParam("status") String status, @QueryParam("entityId") Long entityId, @QueryParam("start") LocalDate startDate, @QueryParam("end") LocalDate endDate) {
+    if (Objects.isNull(status) && Objects.nonNull(entityId) && Objects.nonNull(startDate) && Objects.nonNull(endDate)) {
+      if (bookingEntityRepository.findByIdOptional(entityId).isEmpty()) {
+        throw new NotFoundException("Entity with id " + entityId + " was not found");
+      }
+      return bookingRepository.listAllByEntityAndStartAndEnd(entityId, startDate, endDate);
+    } else if (Objects.nonNull(status) && status.equals(OVERDUE_STATUS)) {
+      return bookingRepository.listAllOverdueBookings(jwt.getSubject());
+    } else if (Objects.nonNull(status) && status.equals(UPCOMING_STATUS)) {
+      return bookingRepository.listAllCurrentAndInFutureBookings(jwt.getSubject());
     } else {
-      bookings = bookingRepository.listAllBookings(jwt.getSubject());
+      return bookingRepository.listAllBookings(jwt.getSubject());
     }
-    return Response.ok(bookings).build();
   }
 
   @POST

@@ -77,4 +77,8 @@ public class BookingRepository implements PanacheRepository<Booking> {
   public long listByUser(String subject) {
     return find("userId = ?1 and isReturned = False and isCancelled = False", subject).stream().count();
   }
+
+  public List<Booking> listAllByEntityAndStartAndEnd(Long entityId, LocalDate startDate, LocalDate endDate) {
+    return list("bookingEntity.id = ?1 and startDate >= ?2 and endDate <= ?3 and isCancelled = False", entityId, startDate, endDate);
+  }
 }
