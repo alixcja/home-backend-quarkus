@@ -8,6 +8,7 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -65,5 +66,12 @@ class BookingRepositoryTest {
 
     // then
     assertEquals(Collections.emptyList(), bookings);
+  }
+
+  @AfterEach
+  @Transactional
+  void tearDown() {
+    bookingRepository.deleteAll();
+    bookingEntityRepository.deleteAll();
   }
 }

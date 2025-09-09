@@ -24,8 +24,7 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.*;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @TestHTTPEndpoint(BookingResource.class)
 @QuarkusTest
@@ -74,7 +73,7 @@ class BookingResourceTests {
             .get("/{id}")
             .then()
             .statusCode(SC_OK)
-            .body("bookingEntity.id", is(7));
+            .body("bookingEntity.id", is(Long.valueOf(booking1.getBookingEntity().getId()).intValue()));
   }
 
   @Test
