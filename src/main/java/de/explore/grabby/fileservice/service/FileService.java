@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 @ApplicationScoped
 public class FileService {
   private static final Logger LOG = LoggerFactory.getLogger(FileService.class);
+  private static final long maxPartSize =  5L * 1024 * 1024 * 1024;
 
   @Inject
   MinioAsyncClient minioClient;
@@ -45,11 +46,23 @@ public class FileService {
 
   private void createRequestAndUploadImage(String bucket, File file, String fileName) {
     LOG.info("Uploading file {} to bucket {}", bucket, fileName);
-    try {
-      minioClient.putObject(createPutObjectArg(bucket, fileName, file));
-    } catch (InsufficientDataException | InternalException | InvalidKeyException | IOException |
-             NoSuchAlgorithmException | XmlParserException e) {
+    try (FileInputStream fis = new FileInputStream(file)) { // open stream here
+      PutObjectArgs args = PutObjectArgs.builder()
+              .bucket(bucket)
+              .object(fileName)
+              .stream(fis, file.length(), 10 * 1024 * 1024) // 10 MB part size
+              .build();
+
+      CompletableFuture<ObjectWriteResponse> future = minioClient.putObject(args);
+      future.get(); // blocks until upload finishes
+
+      LOG.info("Upload completed for file {}", fileName);
+    } catch (ExecutionException e) {
       throw new FileUploadFailedException(e);
+    } catch (InterruptedException | InsufficientDataException | InternalException | InvalidKeyException | IOException |
+             NoSuchAlgorithmException | XmlParserException e) {
+      Thread.currentThread().interrupt();
+      throw new RuntimeException(e);
     }
   }
 
@@ -58,7 +71,7 @@ public class FileService {
       return PutObjectArgs.builder()
               .bucket(bucket)
               .object(fileName)
-              .stream(fileInputStream, -1, -1)
+              .stream(fileInputStream, file.length(), maxPartSize)
               .build();
     } catch (IOException e) {
       throw new RuntimeException(e);

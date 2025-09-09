@@ -109,6 +109,7 @@ public class ShopResource {
   })
   @Parameter(name = "id", description = "ID of the booking entity to fetch image", required = true)
   @Consumes(MediaType.MULTIPART_FORM_DATA)
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getImageForEntity(@PathParam("id") long id) {
     ensureShopByIdExists(id);
     InputStream response = shopService.getImageForEntity(id);
