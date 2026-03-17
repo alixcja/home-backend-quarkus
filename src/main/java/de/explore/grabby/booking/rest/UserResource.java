@@ -18,6 +18,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 // TODO for each resource class:
 // - add dtos
 // - add pagination?
+// TODO: Move it into its own package since it will be needed by the lunch package
 
 @Path("/user")
 @Tag(name = "Users", description = "Endpoints for user information")
