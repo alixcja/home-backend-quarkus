@@ -45,7 +45,7 @@ public class MenuCardResource {
     ensureShopByIdExists(id);
     InputStream response = menuCardService.getImageForMenuCard(id, number);
     if (response == null) {
-      Response.noContent().build();
+      return Response.noContent().build();
     }
     return Response.ok(response).build();
   }
