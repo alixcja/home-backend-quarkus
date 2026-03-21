@@ -27,6 +27,7 @@ public class BookingEntityService {
   @Inject
   BookingEntityRepository bookingEntityRepository;
 
+  // TODO: might need to change that since there are currently two buckets - shops, menucards and entities
   @ConfigProperty(name = "entity.bucket.name")
   String bucket;
 
