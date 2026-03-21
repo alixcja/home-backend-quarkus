@@ -43,7 +43,6 @@ public class MenuCardRepository implements PanacheRepository<MenuCard> {
   }
 
   private String upload(MenuUploadForm menuCard) {
-    System.out.println("filesize " + menuCard.file.length());
     return fileService.uploadImage(bucket, menuCard);
   }
 
