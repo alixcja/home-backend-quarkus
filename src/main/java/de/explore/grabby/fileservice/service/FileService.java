@@ -45,7 +45,7 @@ public class FileService {
   }
 
   private void createRequestAndUploadImage(String bucket, File file, String fileName) {
-    LOG.info("Uploading file {} to bucket {}", bucket, fileName);
+    LOG.info("Uploading file {} to bucket {}", fileName, bucket );
     try (FileInputStream fis = new FileInputStream(file)) { // open stream here
       PutObjectArgs args = PutObjectArgs.builder()
               .bucket(bucket)
@@ -54,7 +54,7 @@ public class FileService {
               .build();
 
       CompletableFuture<ObjectWriteResponse> future = minioClient.putObject(args);
-      future.get(); // blocks until upload finishes
+      future.get();
 
       LOG.info("Upload completed for file {}", fileName);
     } catch (ExecutionException e) {
@@ -78,7 +78,7 @@ public class FileService {
     }
   }
 
-  private void ensureBucketExists(String bucket) {
+  public void ensureBucketExists(String bucket) {
     if (bucketDoesNotExists(bucket)) {
       LOG.info("Bucket {} does not exists - will create it", bucket);
       LOG.info("Creating new bucket {}", bucket);
