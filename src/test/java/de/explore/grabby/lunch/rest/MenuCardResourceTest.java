@@ -4,6 +4,7 @@ import de.explore.grabby.lunch.model.MenuCard;
 import de.explore.grabby.lunch.model.Shop;
 import de.explore.grabby.lunch.repository.MenuCardRepository;
 import de.explore.grabby.lunch.repository.ShopRepository;
+import de.explore.grabby.lunch.rest.request.MenuUploadForm;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -16,11 +17,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 @TestHTTPEndpoint(MenuCardResource.class)
@@ -38,7 +42,7 @@ class MenuCardResourceTest {
 
   @BeforeEach
   @Transactional
-  void setUp() {
+  void setUp() throws URISyntaxException {
     amici = new Shop();
     amici.setWebsite("www.amici-salate.de");
     amici.setName("Amici Salate");
@@ -48,10 +52,18 @@ class MenuCardResourceTest {
     songque.setWebsite("www.songque.com");
     shopRepository.persist(amici, songque);
 
-    MenuCard menuCard1 = new MenuCard();
-    menuCard1.setShop(amici);
-    menuCard1.setNumber(1);
-    menuCard1.setFileName(UUID.randomUUID().toString());
+    URL resource = getClass().getClassLoader().getResource("menuCards/salverbräu-1.png");
+
+    if (resource == null) {
+      throw new IllegalArgumentException("File not found! Check src/test/resources/menuCards/");
+    }
+
+    File file = new File(resource.toURI());
+
+    MenuUploadForm menuUploadForm = new MenuUploadForm();
+    menuUploadForm.file = file;
+    menuUploadForm.number = 1;
+    menuCardRepository.handleMenuCard(amici.id, menuUploadForm);
 
     MenuCard menuCard2 = new MenuCard();
     menuCard2.setShop(amici);
@@ -63,19 +75,25 @@ class MenuCardResourceTest {
     menuCardSongQue.setNumber(1);
     menuCardSongQue.setFileName(UUID.randomUUID().toString());
 
-    menuCardRepository.persist(menuCard1, menuCardSongQue, menuCard2);
+    menuCardRepository.persist(menuCardSongQue, menuCard2);
   }
 
+  // TODO: wtf did i here
   @Test
-  void shouldGetAllMenuCardsForShop1() {
-    given()
+  void shouldGetMenuCard1ForShop1() {
+    byte[] responseBytes = given()
             .pathParams("id", amici.id)
             .pathParams("number", 1)
             .when()
             .get("/{number}")
             .then()
             .statusCode(HttpStatus.SC_OK)
-            .body("$", notNullValue());
+            .contentType(MediaType.APPLICATION_OCTET_STREAM) // Optional: verify the type
+            .extract()
+            .asByteArray();
+
+    // Verify that we actually got data back
+    assertTrue(responseBytes.length > 0, "The menu card image should not be empty");
   }
 
   @Test
@@ -89,13 +107,13 @@ class MenuCardResourceTest {
             .multiPart("number", "2")
             .pathParams("id", songque.id)
             .when()
-            .put("{id}")
+            .put()
             .then()
             .statusCode(HttpStatus.SC_NO_CONTENT);
 
-/*
-    assertEquals(2, menuCardRepository.findAllMenuCardsByShopAndNumber(songque.id).size());
-*/
+
+//   assertEquals(2, menuCardRepository.findAllMenuCardsByShopAndNumber(songque.id).size());
+
   }
 
   @Test
@@ -108,9 +126,8 @@ class MenuCardResourceTest {
             .multiPart("file", "songque1.png", imageStream)
             .multiPart("number", "1")
             .pathParams("id", songque.id)
-            .pathParams("menuCardId", menuCardSongQue.id)
             .when()
-            .put("/{menuCardId}")
+            .put()
             .then()
             .statusCode(HttpStatus.SC_NO_CONTENT);
 
