@@ -131,7 +131,6 @@ public class BookingEntityResourceTests {
   }
 
   @Test
-  @Disabled("Disabled until I found a way to start a dev minio")
   void shouldUploadImageForGame() {
     assertNull(game1.getImage());
     String imageString = "This is Mario Kart";
@@ -151,7 +150,6 @@ public class BookingEntityResourceTests {
   }
 
   @Test
-  @Disabled("Disabled until I found a way to start a dev minio")
   void shouldNotUploadImageForGame() {
     given()
             .when()
@@ -163,7 +161,6 @@ public class BookingEntityResourceTests {
   }
 
   @Test
-  @Disabled("Disabled until I found a way to start a dev minio")
   void shouldReturnImageOfGame() throws IOException {
     File image = File.createTempFile("tmp", ".png");
     EntityUploadForm uploadForm = new EntityUploadForm();
