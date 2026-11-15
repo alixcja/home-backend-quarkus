@@ -26,6 +26,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import java.util.List;
 import java.util.Optional;
 
+// TODO: feature toggle?
 @Path("/shops")
 @Tag(name = "Shops", description = "Operations related to shops")
 public class ShopResource {
