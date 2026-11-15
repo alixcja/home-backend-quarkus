@@ -1,40 +1,69 @@
-name: Build and Push Docker Image
+name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:          # covers all feature branches via their PRs
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-push:
+  build-test:
     runs-on: ubuntu-latest
-    env:
-      TAG: ${{ github.run_number }}
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
 
-      - name: Set up Docker Hub authentication
-        uses: docker/login-action@v3
+      - name: Build and test
+        run: mvn -B verify
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            target/surefire-reports/
+            target/failsafe-reports/
+
+      - name: Upload Quarkus app
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: quarkus-app
+          path: target/quarkus-app/
+
+  publish-image:
+    if: github.ref == 'refs/heads/main'
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: quarkus-app
+          path: target/quarkus-app/
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build with Maven inside Maven Docker image
-        uses: addnab/docker-run-action@v3
+      - uses: docker/build-push-action@v6
         with:
-          image: maven:3.9.9-eclipse-temurin-21
-          options: -v ${{ github.workspace }}:/workspace -w /workspace
-          run: mvn -B clean package
-
-      - name: Build Docker image
-        run: |
-          docker build -f src/main/docker/Dockerfile.jvm -t alixcja/home-backend:dev-${{ env.TAG }} .
-
-      - name: Push Docker image
-        run: |
-          docker push alixcja/home-backend:dev-${{ env.TAG }}
+          context: .
+          file: src/main/docker/Dockerfile.jvm
+          push: true
+          tags: alixcja/home-backend:dev-${{ github.run_number }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
