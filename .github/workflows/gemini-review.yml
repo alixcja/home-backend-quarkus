@@ -1,0 +1,35 @@
+name: PR Agent
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+
+jobs:
+  pr_agent:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: qodo-ai/pr-agent@main
+        env:
+          CONFIG.MODEL: "gemini/gemini-2.0-flash"   # pick a model your free tier supports
+          GOOGLE_AI_STUDIO.GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_REVIEWER.extra_instructions: |
+            You are a senior software architect reviewing a pull request for a Java 21 / Quarkus backend (Maven). Review it as the person who will own and be on call for this system.
+
+              Look for, in priority order:
+              1. Concurrency: race conditions, check-then-act, lost updates, shared mutable state in singleton beans, blocking calls on reactive threads, non-idempotent retries.
+              2. Database: wrong or missing transaction boundaries, N+1 queries, missing indexes, unbounded queries, lazy-loading issues, risky or non-backward-compatible migrations, missing constraints, concurrent writes without locking.
+              3. Architecture: layering violations, business logic in the wrong place, tight coupling, breaking API changes, decisions that are hard to undo.
+              4. Reliability and security: swallowed exceptions, missing timeouts, resource leaks, missing authorization or validation, sensitive data in logs.
+                5. Missing tests for new behavior, edge cases and failure paths.
+
+            Rules:
+              - Only report what you can point to in the diff, with the file and code.
+              - For each finding give severity (blocker/major/minor), the failure scenario, and a concrete fix.
+              - Skip style and naming unless it causes a real defect.
+              - No praise or summary. If nothing significant, say so briefly.
+              - Prefer a few high-value findings over many minor ones.
