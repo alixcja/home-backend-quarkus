@@ -4,10 +4,10 @@ import de.explore.grabby.booking.model.Booking;
 import de.explore.grabby.booking.model.entity.Console;
 import de.explore.grabby.booking.model.entity.Game;
 import de.explore.grabby.booking.repository.entity.BookingEntityRepository;
-import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,15 +25,15 @@ class BookingRepositoryTest {
 
   @Inject
   BookingEntityRepository bookingEntityRepository;
+
   private Game game;
-  private Console console;
   private Booking booking1;
 
   @BeforeEach
   @Transactional
   void setUp() {
     game = new Game("Let's dance!", "This is a fun dance game", "Nintendo Switch");
-    console = new Console("Nintendo Switch", "blue-yellow");
+    Console console = new Console("Nintendo Switch", "blue-yellow");
     bookingEntityRepository.persist(game, console);
 
     booking1 = new Booking("user-1", game, LocalDate.now(), LocalDate.now().plusDays(3L));
@@ -46,7 +46,6 @@ class BookingRepositoryTest {
   }
 
   @Test
-  @TestTransaction
   void shouldReturnOnlyBookingByEntityAndStartAndEndDate() {
     // when
     List<Booking> bookings = bookingRepository.listAllByEntityAndStartAndEnd(game.getId(), LocalDate.now().minusDays(3L), LocalDate.now().plusMonths(1L));
@@ -58,12 +57,18 @@ class BookingRepositoryTest {
   }
 
   @Test
-  @TestTransaction
   void shouldReturnEmptyBecauseThereAreNoBookingsByEntityAndStartAndEndDate() {
     // when
     List<Booking> bookings = bookingRepository.listAllByEntityAndStartAndEnd(game.getId(), LocalDate.now().plusMonths(3L), LocalDate.now().plusMonths(4L));
 
     // then
     assertEquals(Collections.emptyList(), bookings);
+  }
+
+  @AfterEach
+  @Transactional
+  void tearDown() {
+    bookingRepository.deleteAll();
+    bookingEntityRepository.deleteAll();
   }
 }
