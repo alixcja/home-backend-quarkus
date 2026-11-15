@@ -26,7 +26,7 @@ public abstract class BookingEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ENTITY_SEQ")
     @SequenceGenerator(name = "ENTITY_SEQ", sequenceName = "BOOKING_ENTITY_TABLE_SEQ", allocationSize = 1)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @NotBlank(message = "Name of entity may not be blank")
     private String name;
@@ -54,7 +54,7 @@ public abstract class BookingEntity implements Serializable {
         this.isArchived = false;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
