@@ -74,8 +74,8 @@ class BookingResourceTests {
             .get("/{id}")
             .then()
             .statusCode(SC_OK)
-            .body("bookingEntity.id", is(7));
-  }
+            .body("id", is(booking1.getId()))
+            .body("bookingEntity.id", is(booking1.getBookingEntity().getId().intValue()));  }
 
   @Test
   @TestSecurity(user = "Hans Müller")
