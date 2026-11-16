@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: qodo-ai/pr-agent@main
         env:
-          CONFIG.MODEL: "gemini/gemini-4-carbon"
+          CONFIG.MODEL: "gemini/gemini-4-hydrogen"
           GOOGLE_AI_STUDIO.GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_REVIEWER.extra_instructions: |
