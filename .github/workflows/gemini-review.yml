@@ -19,6 +19,7 @@ jobs:
       - uses: qodo-ai/pr-agent@main
         env:
           CONFIG.MODEL: "gemini/gemini-4-hydrogen"
+          CONFIG.CUSTOM_MODEL_MAX_TOKENS: "64000"
           GOOGLE_AI_STUDIO.GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_REVIEWER.extra_instructions: |
