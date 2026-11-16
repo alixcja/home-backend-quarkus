@@ -186,6 +186,7 @@
             <properties>
                 <skipITs>false</skipITs>
                 <quarkus.native.enabled>true</quarkus.native.enabled>
+                <argLine></argLine>
             </properties>
         </profile>
     </profiles>
