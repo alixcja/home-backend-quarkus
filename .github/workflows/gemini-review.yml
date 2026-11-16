@@ -1,12 +1,16 @@
-name: PR Agent
+name: PR Agent (on demand)
 on:
-  pull_request:
-    types: [opened, ready_for_review]
+  issue_comment:
+    types: [created]
 
 jobs:
   pr_agent:
-    if: github.event.pull_request.draft == false
+    if: >
+      github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, '/review') &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
       pull-requests: write
