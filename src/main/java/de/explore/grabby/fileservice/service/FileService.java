@@ -42,11 +42,10 @@ public class FileService {
   private void createRequestAndUploadImage(String bucket, File file, String fileName) {
     LOG.info("Uploading file {} to bucket {}", fileName, bucket);
     try (FileInputStream fis = new FileInputStream(file)) {
-      long partSize = 10 * 1024 * 1024;
       PutObjectArgs args = PutObjectArgs.builder()
               .bucket(bucket)
               .object(fileName)
-              .stream(fis, file.length(), partSize)
+              .stream(fis, file.length(), maxPartSize)
               .build();
 
       CompletableFuture<ObjectWriteResponse> future = minioClient.putObject(args);
