@@ -4,9 +4,6 @@ import de.explore.grabby.booking.rest.request.EntityUploadForm;
 import de.explore.grabby.fileservice.exception.FileUploadFailedException;
 import de.explore.grabby.lunch.rest.request.MenuUploadForm;
 import io.minio.*;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.XmlParserException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.slf4j.Logger;
@@ -16,8 +13,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -25,7 +20,7 @@ import java.util.concurrent.ExecutionException;
 @ApplicationScoped
 public class FileService {
   private static final Logger LOG = LoggerFactory.getLogger(FileService.class);
-  private static final long maxPartSize =  5L * 1024 * 1024 * 1024;
+  private static final long maxPartSize = 5L * 1024 * 1024 * 1024;
 
   @Inject
   MinioAsyncClient minioClient;
@@ -45,12 +40,13 @@ public class FileService {
   }
 
   private void createRequestAndUploadImage(String bucket, File file, String fileName) {
-    LOG.info("Uploading file {} to bucket {}", fileName, bucket );
-    try (FileInputStream fis = new FileInputStream(file)) { // open stream here
+    LOG.info("Uploading file {} to bucket {}", fileName, bucket);
+    try (FileInputStream fis = new FileInputStream(file)) {
+      long partSize = 10 * 1024 * 1024;
       PutObjectArgs args = PutObjectArgs.builder()
               .bucket(bucket)
               .object(fileName)
-              .stream(fis, file.length(), 10 * 1024 * 1024) // 10 MB part size
+              .stream(fis, file.length(), partSize)
               .build();
 
       CompletableFuture<ObjectWriteResponse> future = minioClient.putObject(args);
@@ -59,8 +55,7 @@ public class FileService {
       LOG.info("Upload completed for file {}", fileName);
     } catch (ExecutionException e) {
       throw new FileUploadFailedException(e);
-    } catch (InterruptedException | InsufficientDataException | InternalException | InvalidKeyException | IOException |
-             NoSuchAlgorithmException | XmlParserException e) {
+    } catch (InterruptedException | IOException e) {
       Thread.currentThread().interrupt();
       throw new RuntimeException(e);
     }
@@ -89,12 +84,7 @@ public class FileService {
   }
 
   private void createBucket(String bucket) {
-    try {
-      minioClient.makeBucket(createMakeBucketArgs(bucket));
-    } catch (InsufficientDataException | InternalException | InvalidKeyException | IOException |
-             NoSuchAlgorithmException | XmlParserException e) {
-      throw new RuntimeException(e);
-    }
+    minioClient.makeBucket(createMakeBucketArgs(bucket));
   }
 
   private static MakeBucketArgs createMakeBucketArgs(String bucket) {
@@ -107,8 +97,8 @@ public class FileService {
       CompletableFuture<Boolean> future = minioClient.bucketExists(bucketExistsArgs);
       boolean exists = future.get();
       return !exists;
-    } catch (InsufficientDataException | InternalException | InvalidKeyException | IOException |
-             NoSuchAlgorithmException | XmlParserException | ExecutionException | InterruptedException e) {
+    } catch (
+            ExecutionException | InterruptedException e) {
       throw new RuntimeException(e);
     }
   }
@@ -121,8 +111,8 @@ public class FileService {
     try (InputStream is = minioClient.getObject(getObjectArgs).get()
     ) {
       return is;
-    } catch (InsufficientDataException | InternalException | InvalidKeyException | IOException |
-             NoSuchAlgorithmException | XmlParserException | ExecutionException | InterruptedException e) {
+    } catch (IOException |
+             ExecutionException | InterruptedException e) {
       throw new RuntimeException(e);
     }
   }
