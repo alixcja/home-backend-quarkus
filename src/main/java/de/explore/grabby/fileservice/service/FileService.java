@@ -52,10 +52,7 @@ public class FileService {
       minioClient.putObject(args);
 
       LOG.info("Upload completed for file {}", fileName);
-    } catch (IOException e) {
-      Thread.currentThread().interrupt();
-      throw new FileUploadFailedException(e);
-    } catch (MinioException e) {
+    } catch (IOException | MinioException e) {
       throw new FileUploadFailedException(e);
     }
   }
