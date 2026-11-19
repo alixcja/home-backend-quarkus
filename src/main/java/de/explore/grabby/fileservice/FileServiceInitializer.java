@@ -22,9 +22,13 @@ public class FileServiceInitializer {
   @ConfigProperty(name = "menuCard.bucket.name")
   String menuCardBucket;
 
+  @ConfigProperty(name = "shop.bucket.name")
+  String shopBucket;
+
   void onStart(@Observes StartupEvent ev) {
     LOG.info("Starting FileService initialization");
     fileService.ensureBucketExists(entityBucket);
     fileService.ensureBucketExists(menuCardBucket);
+    fileService.ensureBucketExists(shopBucket);
   }
 }
