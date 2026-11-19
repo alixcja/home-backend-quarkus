@@ -1,9 +1,12 @@
 package de.explore.grabby.fileservice.service;
 
 import de.explore.grabby.booking.rest.request.EntityUploadForm;
+import de.explore.grabby.fileservice.exception.BucketCreationFailedException;
+import de.explore.grabby.fileservice.exception.FileFetchFailedException;
 import de.explore.grabby.fileservice.exception.FileUploadFailedException;
 import de.explore.grabby.lunch.rest.request.MenuUploadForm;
 import io.minio.*;
+import io.minio.errors.MinioException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.slf4j.Logger;
@@ -14,8 +17,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @ApplicationScoped
 public class FileService {
@@ -23,7 +24,7 @@ public class FileService {
   private static final long maxPartSize = 5L * 1024 * 1024 * 1024;
 
   @Inject
-  MinioAsyncClient minioClient;
+  MinioClient minioClient;
 
   public String uploadImage(String bucket, EntityUploadForm uploadForm) {
     ensureBucketExists(bucket);
@@ -48,27 +49,14 @@ public class FileService {
               .stream(fis, file.length(), maxPartSize)
               .build();
 
-      CompletableFuture<ObjectWriteResponse> future = minioClient.putObject(args);
-      future.get();
+      minioClient.putObject(args);
 
       LOG.info("Upload completed for file {}", fileName);
-    } catch (ExecutionException e) {
-      throw new FileUploadFailedException(e);
-    } catch (InterruptedException | IOException e) {
-      Thread.currentThread().interrupt();
-      throw new RuntimeException(e);
-    }
-  }
-
-  private PutObjectArgs createPutObjectArg(String bucket, String fileName, File file) {
-    try (FileInputStream fileInputStream = new FileInputStream(file)) {
-      return PutObjectArgs.builder()
-              .bucket(bucket)
-              .object(fileName)
-              .stream(fileInputStream, file.length(), maxPartSize)
-              .build();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      Thread.currentThread().interrupt();
+      throw new FileUploadFailedException(e);
+    } catch (MinioException e) {
+      throw new FileUploadFailedException(e);
     }
   }
 
@@ -83,7 +71,11 @@ public class FileService {
   }
 
   private void createBucket(String bucket) {
-    minioClient.makeBucket(createMakeBucketArgs(bucket));
+    try {
+      minioClient.makeBucket(createMakeBucketArgs(bucket));
+    } catch (MinioException e) {
+      throw new BucketCreationFailedException(e);
+    }
   }
 
   private static MakeBucketArgs createMakeBucketArgs(String bucket) {
@@ -93,11 +85,9 @@ public class FileService {
   private boolean bucketDoesNotExists(String bucketName) {
     BucketExistsArgs bucketExistsArgs = new BucketExistsArgs.Builder().bucket(bucketName).build();
     try {
-      CompletableFuture<Boolean> future = minioClient.bucketExists(bucketExistsArgs);
-      boolean exists = future.get();
+      boolean exists = minioClient.bucketExists(bucketExistsArgs);
       return !exists;
-    } catch (
-            ExecutionException | InterruptedException e) {
+    } catch (MinioException e) {
       throw new RuntimeException(e);
     }
   }
@@ -107,12 +97,10 @@ public class FileService {
       throw new IllegalArgumentException("Provided bucket does not exist");
     }
     GetObjectArgs getObjectArgs = createGetObjectArgs(bucket, fileName);
-    try (InputStream is = minioClient.getObject(getObjectArgs).get()
-    ) {
-      return is;
-    } catch (IOException |
-             ExecutionException | InterruptedException e) {
-      throw new RuntimeException(e);
+    try {
+      return minioClient.getObject(getObjectArgs);
+    } catch (MinioException e) {
+      throw new FileFetchFailedException(e);
     }
   }
 
