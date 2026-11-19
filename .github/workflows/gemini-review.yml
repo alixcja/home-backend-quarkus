@@ -22,6 +22,8 @@ jobs:
           CONFIG.CUSTOM_MODEL_MAX_TOKENS: "64000"
           GOOGLE_AI_STUDIO.GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_REVIEWER.persistent_comment: "false"
+          PR_REVIEWER.num_max_findings: "10"
           PR_REVIEWER.extra_instructions: |
             You are a senior software architect reviewing a pull request for a Java 21 / Quarkus backend (Maven). Review it as the person who will own and be on call for this system.
 
