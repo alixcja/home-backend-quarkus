@@ -1,7 +1,7 @@
-package de.explore.grabby.booking.service;
+package de.explore.grabby.news.service;
 
-import de.explore.grabby.booking.model.news.News;
-import de.explore.grabby.booking.model.news.NewsType;
+import de.explore.grabby.news.model.News;
+import de.explore.grabby.news.model.NewsType;
 import de.explore.grabby.booking.repository.BookingRepository;
 import de.explore.grabby.booking.repository.entity.BookingEntityRepository;
 import jakarta.enterprise.context.ApplicationScoped;

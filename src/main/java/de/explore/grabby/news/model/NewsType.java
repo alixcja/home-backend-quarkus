@@ -1,4 +1,4 @@
-package de.explore.grabby.booking.model.news;
+package de.explore.grabby.news.model;
 
 public enum NewsType {
   NEWS_SOON_LUNCHTIME,

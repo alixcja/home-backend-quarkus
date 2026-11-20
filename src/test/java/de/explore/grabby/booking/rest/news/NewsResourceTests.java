@@ -5,7 +5,7 @@ import de.explore.grabby.booking.model.entity.Console;
 import de.explore.grabby.booking.model.entity.Game;
 import de.explore.grabby.booking.repository.BookingRepository;
 import de.explore.grabby.booking.repository.entity.BookingEntityRepository;
-import de.explore.grabby.booking.rest.NewsResource;
+import de.explore.grabby.news.rest.NewsResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
