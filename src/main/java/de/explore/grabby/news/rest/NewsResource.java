@@ -1,7 +1,7 @@
-package de.explore.grabby.booking.rest;
+package de.explore.grabby.news.rest;
 
-import de.explore.grabby.booking.model.news.News;
-import de.explore.grabby.booking.service.NewsService;
+import de.explore.grabby.news.model.News;
+import de.explore.grabby.news.service.NewsService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

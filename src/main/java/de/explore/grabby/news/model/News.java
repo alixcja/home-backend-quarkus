@@ -1,4 +1,4 @@
-package de.explore.grabby.booking.model.news;
+package de.explore.grabby.news.model;
 
 import de.explore.grabby.booking.model.Booking;
 import de.explore.grabby.booking.model.entity.BookingEntity;
