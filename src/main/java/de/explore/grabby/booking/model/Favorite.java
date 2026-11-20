@@ -3,6 +3,7 @@ package de.explore.grabby.booking.model;
 import de.explore.grabby.booking.model.entity.BookingEntity;
 import jakarta.persistence.*;
 
+// TODO: Reuse it for shops?
 @Entity
 public class Favorite {
 
